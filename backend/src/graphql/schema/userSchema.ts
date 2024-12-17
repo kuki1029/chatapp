@@ -11,6 +11,7 @@ export const userTypeDefs = gql`
   type UserDTO {
     name: String!
     email: String!
+    token: String!
   }
 
   type Query {

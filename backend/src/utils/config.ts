@@ -8,5 +8,6 @@ export default {
   DB_USER: process.env.DB_USER,
   DB_PASSWORD: process.env.POSTGRES_PASSWORD,
   PORT: process.env.PORT || 3001,
-  SECRET: process.env.SECRET,
+  SECRET: process.env.SECRET_KEY,
+  NODE_ENV: process.env.NODE_ENV,
 };

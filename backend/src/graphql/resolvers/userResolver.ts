@@ -1,12 +1,20 @@
 import { User } from "../../models/user";
 import { UserDTO } from "../../../types";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { Response, Request } from "express";
+import env from "../../utils/config";
+
+interface MyContext {
+  res: Response;
+  req: Request;
+  userID: string | null;
+}
 
 export const userResolvers = {
   Query: {
     allUsers: async () => {
       const users = await User.findAll({ raw: true });
-      console.log(users);
       return users;
     },
   },
@@ -26,14 +34,17 @@ export const userResolvers = {
         password: hashedPass,
         email: args.email,
       });
+      const token = jwt.sign(user.dataValues.id.toString(), env.SECRET);
       const userDTO: UserDTO = {
         ...user.dataValues,
+        token,
       };
       return userDTO;
     },
     login: async (
       _: unknown,
-      args: { name: string; email: string; password: string }
+      args: { name: string; email: string; password: string },
+      ctx: MyContext
     ) => {
       const user = await User.findOne({ where: { email: args.email } });
       if (!user) {
@@ -46,8 +57,19 @@ export const userResolvers = {
       if (!hashMatch) {
         return null;
       }
+      console.log("AAAAAAAAAAAAAA");
+      const token = jwt.sign(user.dataValues.id.toString(), env.SECRET);
+      console.log(ctx);
+      ctx.res.cookie("token", token, {
+        httpOnly: true, // Prevents JavaScript access
+        secure: env.NODE_ENV === "production", // HTTPS only in production
+        sameSite: "lax", // CSRF protection
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      });
+
       const userDTO: UserDTO = {
         ...user.dataValues,
+        token,
       };
       return userDTO;
     },

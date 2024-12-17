@@ -11,13 +11,17 @@
   },
   "dependencies": {
     "@apollo/server": "^4.11.2",
+    "@types/cookie-parser": "^1.4.8",
     "@types/express-serve-static-core": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.7",
     "apollo-server-express": "^3.13.0",
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1",
     "sequelize": "^6.37.5"
   }
