@@ -4,6 +4,7 @@ import App from './App.tsx'
 import { MantineProvider } from '@mantine/core'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { theme } from './utility/theme.tsx'
+import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client'
 
 const rootElem = document.getElementById('root')
 
@@ -11,12 +12,24 @@ if (!rootElem) {
   throw new Error('Root element does not exist on page.')
 }
 
+const client = new ApolloClient({
+  uri: 'http://localhost:4000/graphql',
+  cache: new InMemoryCache(),
+})
+
 createRoot(rootElem).render(
   <StrictMode>
-    <MantineProvider theme={theme} defaultColorScheme="light">
-      <Router>
-        <App />
-      </Router>
-    </MantineProvider>
+    <ApolloProvider client={client}>
+      <MantineProvider theme={theme} defaultColorScheme="light">
+        <Router
+          future={{
+            v7_relativeSplatPath: true,
+            v7_startTransition: true,
+          }}
+        >
+          <App />
+        </Router>
+      </MantineProvider>
+    </ApolloProvider>
   </StrictMode>
 )

@@ -14,8 +14,12 @@ import {
   useMantineTheme,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
+import { useEffect } from 'react'
 import { upperFirst, useToggle } from '@mantine/hooks'
+import { useMutation } from '@apollo/client'
 import { GoogleButton } from '../utility/GoogleButton.tsx'
+import { LOGIN } from '../features/auth/auth.gql.ts'
+import { LoginMutation, LoginMutationVariables } from '../__generated__/graphql.ts'
 
 export const Auth = () => {
   const [type, toggle] = useToggle(['login', 'register'])
@@ -34,8 +38,30 @@ export const Auth = () => {
     },
   })
 
-  const submitForm = () => {
+  const [login, { data, loading, error }] = useMutation<LoginMutation, LoginMutationVariables>(
+    LOGIN,
+    {
+      onError: (error) => {
+        console.log(error)
+      },
+    }
+  )
+
+  useEffect(() => {
+    if (data) {
+      console.log(data)
+    }
+  }, [data])
+
+  if (loading) {
+    return <p>Loading...</p> //TODO: Add better loading pages
+  } else if (error) {
+    return <p>Some error happened</p> //TODO: Better error page
+  }
+
+  const submitForm = async () => {
     console.log(form.values)
+    await login({ variables: { email: form.values.email, password: form.values.password } })
   }
 
   return (
@@ -52,8 +78,8 @@ export const Auth = () => {
           <Divider label="Or continue with email" labelPosition="center" my="lg" />
           {/* Login with email */}
           <form
-            onSubmit={form.onSubmit(() => {
-              submitForm()
+            onSubmit={form.onSubmit(async () => {
+              await submitForm()
             })}
           >
             <Stack>

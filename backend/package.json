@@ -14,8 +14,10 @@
     "@types/express-serve-static-core": "^5.0.2",
     "apollo-server-express": "^3.13.0",
     "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "graphql-tag": "^2.12.6",
     "pg": "^8.13.1",
     "sequelize": "^6.37.5"
   }

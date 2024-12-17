@@ -1,10 +1,14 @@
 import { User } from "../../models/user";
-import { UserDTO } from "../../types";
+import { UserDTO } from "../../../types";
 import bcrypt from "bcrypt";
 
 export const userResolvers = {
   Query: {
-    allUsers: async () => await User.findAll(),
+    allUsers: async () => {
+      const users = await User.findAll({ raw: true });
+      console.log(users);
+      return users;
+    },
   },
   Mutation: {
     signup: async (
@@ -35,7 +39,6 @@ export const userResolvers = {
       if (!user) {
         return null;
       }
-      console.log(user);
       const hashMatch = await bcrypt.compare(
         args.password,
         user.dataValues.password
