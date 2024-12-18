@@ -17,3 +17,15 @@ export const SIGNUP = gql`
     }
   }
 `
+
+export const LOGGED_IN = gql`
+  query isLoggedIn {
+    isLoggedIn
+  }
+`
+
+export const LOGOUT = gql`
+  mutation logout {
+    logout
+  }
+`

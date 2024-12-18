@@ -46,15 +46,12 @@ const start = async () => {
 
         if (token) {
           try {
-            const decoded = jwt.verify(token, env.SECRET) as {
-              id: string;
-            };
-            userID = decoded.id;
+            const decoded = jwt.verify(token, env.SECRET) as string;
+            userID = decoded;
           } catch (err) {
             console.log("Invalid token");
           }
         }
-
         return { res: typedRes, req: typedReq, userID };
       },
     })

@@ -16,10 +16,12 @@ export const userTypeDefs = gql`
 
   type Query {
     allUsers: [User!]!
+    isLoggedIn: Boolean!
   }
 
   type Mutation {
     signup(name: String!, password: String!, email: String!): UserDTO
     login(email: String!, password: String!): UserDTO
+    logout: Boolean
   }
 `;

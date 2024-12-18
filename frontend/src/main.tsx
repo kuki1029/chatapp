@@ -18,6 +18,7 @@ const client = new ApolloClient({
   credentials: 'include',
 })
 
+// TODO: Convert generate script and run dev into one step along with build steps
 createRoot(rootElem).render(
   <StrictMode>
     <ApolloProvider client={client}>

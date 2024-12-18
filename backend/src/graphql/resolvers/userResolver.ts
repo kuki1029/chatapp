@@ -17,6 +17,12 @@ export const userResolvers = {
       const users = await User.findAll({ raw: true });
       return users;
     },
+    isLoggedIn: async (_: unknown, __: unknown, ctx: MyContext) => {
+      if (ctx.userID) {
+        return true;
+      }
+      return false;
+    },
   },
   Mutation: {
     signup: async (
@@ -57,9 +63,7 @@ export const userResolvers = {
       if (!hashMatch) {
         return null;
       }
-      console.log("AAAAAAAAAAAAAA");
       const token = jwt.sign(user.dataValues.id.toString(), env.SECRET);
-      console.log(ctx);
       ctx.res.cookie("token", token, {
         httpOnly: true, // Prevents JavaScript access
         secure: env.NODE_ENV === "production", // HTTPS only in production
@@ -72,6 +76,18 @@ export const userResolvers = {
         token,
       };
       return userDTO;
+    },
+    logout: async (_: unknown, __: unknown, ctx: MyContext) => {
+      try {
+        ctx.res.clearCookie("token", {
+          httpOnly: true,
+          sameSite: "lax",
+          secure: env.NODE_ENV === "production",
+        });
+        return true;
+      } catch {
+        return false;
+      }
     },
   },
 };

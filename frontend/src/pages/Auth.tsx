@@ -20,8 +20,9 @@ import { useMutation } from '@apollo/client'
 import { GoogleButton } from '../utility/GoogleButton.tsx'
 import { LOGIN } from '../features/auth/auth.gql.ts'
 import { LoginMutation, LoginMutationVariables } from '../__generated__/graphql.ts'
+import { useNavigate } from 'react-router-dom'
 
-export const Auth = () => {
+export const Auth = ({ refetch }: { refetch: () => void }) => {
   const [type, toggle] = useToggle(['login', 'register'])
   const theme = useMantineTheme()
   const form = useForm({
@@ -37,6 +38,7 @@ export const Auth = () => {
       password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
     },
   })
+  const navigate = useNavigate()
 
   const [login, { data, loading, error }] = useMutation<LoginMutation, LoginMutationVariables>(
     LOGIN,
@@ -48,8 +50,9 @@ export const Auth = () => {
   )
 
   useEffect(() => {
-    if (data) {
-      console.log(data)
+    if (data?.login) {
+      refetch() //TODO: Change refetch name to something more descriptive in regards to query
+      navigate('/')
     }
   }, [data])
 
@@ -60,7 +63,6 @@ export const Auth = () => {
   }
 
   const submitForm = async () => {
-    console.log(form.values)
     await login({ variables: { email: form.values.email, password: form.values.password } })
   }
 
