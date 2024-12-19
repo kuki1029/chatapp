@@ -14,6 +14,8 @@ services:
     build:
       context: ./backend/
       dockerfile: Dockerfile
+    env_file:
+      - prod.env
     ports:
       - "4000:4000"
     depends_on:
@@ -27,7 +29,6 @@ services:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - potsgres_data:/var/lib/postgresql/data
-      # ENV FILE NEEDS TO BE PASSED IN CLI TODO FIND ANOTHER WAY
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
