@@ -12,8 +12,9 @@ if (!rootElem) {
   throw new Error('Root element does not exist on page.')
 }
 
+// TODO: Remove links and make them part of env
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/graphql',
+  uri: 'http://localhost:8080/api/',
   cache: new InMemoryCache(),
   credentials: 'include',
 })

@@ -1,0 +1,43 @@
+services:
+  frontend_webchat:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend_webchat
+    networks:
+      - webchat-network
+
+  backend_webchat:
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+    networks:
+      - webchat-network
+
+  postgres:
+    image: postgres
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - potsgres_data:/var/lib/postgresql/data
+      # ENV FILE NEEDS TO BE PASSED IN CLI TODO FIND ANOTHER WAY
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - webchat-network
+
+volumes:
+  potsgres_data:
+
+networks:
+  webchat-network:
+    driver: bridge

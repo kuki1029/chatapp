@@ -1,8 +1,14 @@
 import { Sequelize } from "sequelize";
 import env from "./config";
 
-const sequelize = new Sequelize(env.DB_URL!, {
-  host: "localhost",
+let DB_URL = "";
+if (env.NODE_ENV === "production") {
+  DB_URL = env.DB_URL_PROD!;
+} else {
+  DB_URL = env.DB_URL!;
+}
+
+const sequelize = new Sequelize(DB_URL, {
   dialect: "postgres",
 });
 
