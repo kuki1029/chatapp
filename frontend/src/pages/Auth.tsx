@@ -54,6 +54,7 @@ export const Auth = ({ refetch }: { refetch: () => void }) => {
       refetch() //TODO: Change refetch name to something more descriptive in regards to query
       navigate('/')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   if (loading) {

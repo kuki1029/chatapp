@@ -14,7 +14,10 @@ if (!rootElem) {
 
 // TODO: Remove links and make them part of env
 const client = new ApolloClient({
-  uri: 'http://localhost:8080/api/',
+  uri:
+    import.meta.env.MODE === 'production'
+      ? 'http://localhost:8080/api/'
+      : 'http://localhost:4000/graphql',
   cache: new InMemoryCache(),
   credentials: 'include',
 })

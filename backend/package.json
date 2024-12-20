@@ -1,7 +1,7 @@
 {
   "scripts": {
     "tsc": "tsc",
-    "dev": "docker compose -f docker-compose.dev.yml up & ts-node-dev index.ts",
+    "dev": "docker compose -f docker-compose.dev.yml --env-file .env up & ts-node-dev index.ts",
     "start": "node build/index.js"
   },
   "devDependencies": {
