@@ -1,18 +1,19 @@
-import { Center, Button as MantineButton, useMantineTheme } from '@mantine/core'
+import { Center, Button as MantineButton, useMantineTheme, ButtonProps } from '@mantine/core'
 
-interface Iprops {
-  text: string
-  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void
-}
+// & is intersection
+type Iprops = ButtonProps &
+  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    text: string
+  }
 
-export const Button = ({ text, onClick }: Iprops) => {
+export const Button: React.FC<Iprops> = ({ text, ...props }) => {
   const theme = useMantineTheme()
-
   return (
     <Center>
       <MantineButton
         w={'70%'}
         maw={300}
+        miw={100}
         fullWidth
         color="primary"
         variant="outline"
@@ -24,7 +25,7 @@ export const Button = ({ text, onClick }: Iprops) => {
           },
         }}
         my={16}
-        onClick={onClick}
+        {...props}
       >
         {text}
       </MantineButton>

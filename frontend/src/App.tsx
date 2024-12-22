@@ -1,41 +1,51 @@
-import { Routes, Route, useNavigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { Auth } from './pages/Auth.tsx'
+import { ProtectedRoute } from './features/auth/ProtectedRoute.tsx'
 import { ChatScreen } from './pages/ChatScreen.tsx'
+import { PageNotFound } from './pages/PageNotFound.tsx'
+import { Error } from './pages/Error.tsx'
+import { Loading } from './pages/Loading.tsx'
 import '@mantine/core/styles.css'
 import { useQuery } from '@apollo/client'
 import { LOGGED_IN } from './features/auth/auth.gql.ts'
-import { useEffect } from 'react'
 import { IsLoggedInQuery, IsLoggedInQueryVariables } from './__generated__/graphql.ts'
+import { useMatch, useNavigate } from 'react-router-dom'
 
 function App() {
-  const { data, loading, error, refetch } = useQuery<IsLoggedInQuery, IsLoggedInQueryVariables>(
-    LOGGED_IN,
-    {
-      fetchPolicy: 'network-only',
-    }
-  )
+  const isLoginPage = useMatch('/login')
   const navigate = useNavigate()
-
-  useEffect(() => {
-    if (!loading) {
-      if (data?.isLoggedIn) {
+  const {
+    data,
+    refetch: refetchLoginStatus,
+    error,
+    loading,
+  } = useQuery<IsLoggedInQuery, IsLoggedInQueryVariables>(LOGGED_IN, {
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data) => {
+      if (data.isLoggedIn && isLoginPage) {
         navigate('/')
-      } else {
-        navigate('/login')
       }
-    }
-  }, [data, loading, navigate])
+    },
+  })
+
+  const isLoggedIn = data?.isLoggedIn
 
   if (error) {
-    return <p>Some error happened. Refresh page</p>
+    return <Error />
+  }
+
+  if (loading) {
+    return <Loading visible={loading} />
   }
 
   return (
     <Routes>
-      <Route path="/" element={<ChatScreen refetch={() => void refetch()} />} /> //TODO: Figure out
-      linter here and in chatscreen
-      <Route path="/login" element={<Auth refetch={() => void refetch()} />} />
-      <Route path="*" element={<div>No Match</div>} /> //TODO: Add 404 page
+      <Route path="/login" element={<Auth refetchLoginStatus={refetchLoginStatus} />} />
+      <Route path="/" element={<ProtectedRoute isLoggedIn={isLoggedIn} />}>
+        <Route path="" element={<ChatScreen refetchLoginStatus={refetchLoginStatus} />} />
+      </Route>
+      <Route path="*" element={<PageNotFound />} />
     </Routes>
   )
 }
