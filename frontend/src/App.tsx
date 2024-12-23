@@ -21,7 +21,7 @@ function App() {
     loading,
   } = useQuery<IsLoggedInQuery, IsLoggedInQueryVariables>(LOGGED_IN, {
     fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true,
+    notifyOnNetworkStatusChange: true, // Need this so it uses onComplete on refetch
     onCompleted: (data) => {
       if (data.isLoggedIn && isLoginPage) {
         navigate('/')
