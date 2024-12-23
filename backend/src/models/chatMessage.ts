@@ -20,10 +20,6 @@ ChatMessage.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    sender: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     time: {
       type: DataTypes.TIME,
       allowNull: false,
