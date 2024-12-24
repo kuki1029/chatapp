@@ -16,6 +16,13 @@ export const messageTypeDefs = gql`
     time: String!
   }
 
+  input MessageInput {
+    type: MessageTypes!
+    content: String!
+    time: String!
+    chatId: String!
+  }
+
   enum MessageTypes {
     TEXT
     ATTACHMENT
@@ -24,16 +31,15 @@ export const messageTypeDefs = gql`
   type Chat {
     id: ID!
     membersID: [ID!]!
-
   }
 
   type Query {
-    userChats(): [Chat!]!
-    chatMessages(): [Message!]!
+    userChats: [Chat!]!
+    chatMessages(chatId: String): [Message!]!
   }
 
   type Mutation {
-    addMessage(content: Message!, type: MessageTypes!): Boolean
-    createChat(withID: ID!): Boolean
+    addMessage(msg: MessageInput!): Message!
+    createChat(memberId: ID!): Chat!
   }
 `;

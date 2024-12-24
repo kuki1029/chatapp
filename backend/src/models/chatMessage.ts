@@ -13,7 +13,7 @@ ChatMessage.init(
       autoIncrement: true,
     },
     type: {
-      type: DataTypes.ENUM("text", "attachment"),
+      type: DataTypes.ENUM("TEXT", "ATTACHMENT"),
       allowNull: false,
     },
     content: {
@@ -21,7 +21,7 @@ ChatMessage.init(
       allowNull: false,
     },
     time: {
-      type: DataTypes.TIME,
+      type: DataTypes.DATE,
       allowNull: false,
     },
   },
