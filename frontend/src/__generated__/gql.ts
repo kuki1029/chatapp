@@ -18,6 +18,10 @@ const documents = {
     "\n  mutation signup($name: String!, $password: String!, $email: String!) {\n    signup(name: $name, password: $password, email: $email) {\n      name\n      email\n    }\n  }\n": types.SignupDocument,
     "\n  query isLoggedIn {\n    isLoggedIn\n  }\n": types.IsLoggedInDocument,
     "\n  mutation logout {\n    logout\n  }\n": types.LogoutDocument,
+    "\n  mutation CreateChatWithEmail($email: String) {\n    createChatWithEmail(email: $email) {\n      membersID\n      id\n    }\n  }\n": types.CreateChatWithEmailDocument,
+    "\n  mutation AddMessage($msg: MessageInput!) {\n    addMessage(msg: $msg) {\n      content\n    }\n  }\n": types.AddMessageDocument,
+    "\n  query UserChats {\n    userChats {\n      id\n      membersID\n    }\n  }\n": types.UserChatsDocument,
+    "\n  query ChatMessages($chatId: String) {\n    chatMessages(chatId: $chatId) {\n      content\n      time\n      type\n    }\n  }\n": types.ChatMessagesDocument,
 };
 
 /**
@@ -50,6 +54,22 @@ export function gql(source: "\n  query isLoggedIn {\n    isLoggedIn\n  }\n"): (t
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  mutation logout {\n    logout\n  }\n"): (typeof documents)["\n  mutation logout {\n    logout\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation CreateChatWithEmail($email: String) {\n    createChatWithEmail(email: $email) {\n      membersID\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreateChatWithEmail($email: String) {\n    createChatWithEmail(email: $email) {\n      membersID\n      id\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation AddMessage($msg: MessageInput!) {\n    addMessage(msg: $msg) {\n      content\n    }\n  }\n"): (typeof documents)["\n  mutation AddMessage($msg: MessageInput!) {\n    addMessage(msg: $msg) {\n      content\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query UserChats {\n    userChats {\n      id\n      membersID\n    }\n  }\n"): (typeof documents)["\n  query UserChats {\n    userChats {\n      id\n      membersID\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query ChatMessages($chatId: String) {\n    chatMessages(chatId: $chatId) {\n      content\n      time\n      type\n    }\n  }\n"): (typeof documents)["\n  query ChatMessages($chatId: String) {\n    chatMessages(chatId: $chatId) {\n      content\n      time\n      type\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

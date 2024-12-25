@@ -41,5 +41,6 @@ export const messageTypeDefs = gql`
   type Mutation {
     addMessage(msg: MessageInput!): Message!
     createChat(memberId: ID!): Chat!
+    createChatWithEmail(email: String): Chat
   }
 `;
