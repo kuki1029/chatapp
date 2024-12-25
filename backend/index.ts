@@ -32,12 +32,13 @@ const start = async () => {
 
   await server.start();
 
-  // TODO: Check if upto date spec with apollo 4
+  // TODO: Check if upto date spec with apollo 4. update to http server
   app.use(
     "/graphql",
     cors(corsOptions),
     cookieParser(),
     express.json(),
+    // TODO: Ideally auth middleware doesnt go to login stuff if not logged in
     expressMiddleware(server, {
       context: async ({ res, req }): Promise<MyContext> => {
         const token = req.cookies.token;

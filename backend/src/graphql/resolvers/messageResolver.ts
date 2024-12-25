@@ -1,4 +1,5 @@
 import { Chat, ChatMember, User, ChatMessage } from "../../models/models";
+import { Op } from "sequelize";
 
 export enum MessageTypes {
   TEXT = "TEXT",
@@ -25,7 +26,6 @@ export const messageResolvers = {
   },
   Query: {
     userChats: async (_: unknown, __: unknown, ctx: MyContext) => {
-      console.log("AAAA");
       const chatMembers = await ChatMember.findAll({
         where: { userId: ctx.userID! },
         include: [
@@ -35,15 +35,33 @@ export const messageResolvers = {
           },
         ],
       });
-      console.log(chatMembers);
+      // Edge case where user has no chats
       if (chatMembers.length === 0) {
         return [];
       }
+      if (!ctx.userID) {
+        return;
+      }
+      const userId = ctx.userID;
+      const user = await User.findByPk(parseInt(ctx.userID));
       const chats = chatMembers.map((chatMem) => {
         const chat = chatMem.dataValues.chat;
         return {
           id: chat.dataValues.id,
-          membersID: chat.dataValues.membersList,
+          membersID: chat.dataValues.membersIdList.filter(
+            (_: any, index: Number) =>
+              index !==
+              chat.dataValues.membersIdList.findIndex(
+                (el: Number) => el === parseInt(userId)
+              )
+          ),
+          membersNames: chat.dataValues.membersNameList.filter(
+            (_: any, index: Number) =>
+              index !==
+              chat.dataValues.membersNameList.findIndex(
+                (el: String) => el === user?.dataValues.name
+              )
+          ),
         };
       });
       return chats;
@@ -52,8 +70,13 @@ export const messageResolvers = {
       const messages = await ChatMessage.findAll({
         where: { chatId: args.chatId },
       });
-      console.log(messages);
-      return messages;
+      const msgs = messages.map((msg) => {
+        return {
+          ...msg.dataValues,
+          senderId: msg.dataValues.userId,
+        };
+      });
+      return msgs;
     },
   },
   Mutation: {
@@ -71,17 +94,38 @@ export const messageResolvers = {
         chatId: msg.chatId,
         userId: ctx.userID,
       });
-      return createdMsg;
+
+      return {
+        ...createdMsg.dataValues,
+        senderId: createdMsg.dataValues.userId,
+      };
     },
     createChat: async (
       _: unknown,
       args: { memberId: string | string[] },
       ctx: MyContext
     ) => {
-      const membersID = [ctx.userID, args.memberId];
+      if (!ctx.userID) {
+        return;
+      }
+      const membersID = [...args.memberId];
 
-      const chat = await Chat.create({ membersList: membersID });
-      console.log(chat.dataValues);
+      const users = await User.findAll({
+        where: {
+          id: {
+            [Op.in]: membersID, // Use Sequelize's Op.in operator
+          },
+        },
+      });
+      const membersNames = users.map((user) => user.dataValues.name);
+
+      const mainUser = await User.findByPk(parseInt(ctx.userID));
+
+      const chat = await Chat.create({
+        membersIdList: membersID.concat(mainUser?.dataValues.id),
+        membersNameList: membersNames.concat(mainUser?.dataValues.name),
+      });
+
       // Create chat member entries
       if (typeof args.memberId === "string") {
         await ChatMember.create({
@@ -95,19 +139,42 @@ export const messageResolvers = {
       } else {
         // TODO: Add group chat reference
       }
-      return { id: chat.dataValues.id, membersID };
+      return {
+        id: chat.dataValues.id,
+        membersID,
+        membersNames,
+        lastMsg: "",
+        lastMsgTime: "",
+      };
     },
     createChatWithEmail: async (
       _: unknown,
       args: { email: string },
       ctx: MyContext
     ) => {
+      if (!ctx.userID) {
+        return;
+      }
       const user = await User.findOne({ where: { email: args.email } });
       if (!user) {
         return null;
       }
-      const membersID = [ctx.userID, user.dataValues.id];
-      const chat = await Chat.create({ membersList: membersID });
+      const membersID = [user.dataValues.id];
+      const users = await User.findAll({
+        where: {
+          id: {
+            [Op.in]: membersID, // Use Sequelize's Op.in operator
+          },
+        },
+      });
+
+      const mainUser = await User.findByPk(parseInt(ctx.userID));
+
+      const membersNames = users.map((user) => user.dataValues.name);
+      const chat = await Chat.create({
+        membersIdList: membersID.concat(mainUser?.dataValues.id),
+        membersNameList: membersNames.concat(mainUser?.dataValues.name),
+      });
       // Create chat member entries
       await ChatMember.create({
         chatId: chat.dataValues.id,
@@ -118,7 +185,13 @@ export const messageResolvers = {
         userId: user.dataValues.id,
       });
 
-      return { id: chat.dataValues.id, membersID };
+      return {
+        id: chat.dataValues.id,
+        membersID,
+        membersNames,
+        lastMsg: "",
+        lastMsgTime: "",
+      };
     },
   },
 };

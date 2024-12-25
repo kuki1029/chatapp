@@ -14,6 +14,7 @@ export const messageTypeDefs = gql`
     type: MessageTypes!
     content: String!
     time: String!
+    senderId: ID!
   }
 
   input MessageInput {
@@ -31,6 +32,7 @@ export const messageTypeDefs = gql`
   type Chat {
     id: ID!
     membersID: [ID!]!
+    membersNames: [String!]!
   }
 
   type Query {
