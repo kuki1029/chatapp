@@ -17,6 +17,7 @@ export const userTypeDefs = gql`
   type Query {
     allUsers: [User!]!
     isLoggedIn: Boolean!
+    userID: String
   }
 
   type Mutation {

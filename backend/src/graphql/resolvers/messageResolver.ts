@@ -87,10 +87,10 @@ export const messageResolvers = {
         type = "TEXT";
       }
       // const msg: Message = args; TODO: look at simplifying this.
+      // TODO: Remove time requirement in schema or figure out format
       const createdMsg = await ChatMessage.create({
         type: type,
         content: msg.content,
-        time: msg.time,
         chatId: msg.chatId,
         userId: ctx.userID,
       });

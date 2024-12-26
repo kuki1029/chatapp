@@ -21,7 +21,6 @@ import {
 } from '@mantine/core'
 import { IconArrowRight, IconPlus, IconVideoPlus } from '@tabler/icons-react'
 import { ChatBubble } from '../features/texting/ChatBubble'
-import { data } from '../features/texting/data'
 import { useState } from 'react'
 import {
   CreateChatWithEmailMutation,
@@ -32,6 +31,11 @@ import { UserChatsQuery, UserChatsQueryVariables } from '../__generated__/graphq
 import { GET_USER_CHATS } from '../features/texting/chat.gql'
 import { ChatMessagesQuery, ChatMessagesQueryVariables } from '../__generated__/graphql'
 import { GET_CHAT_MESSAGES } from '../features/texting/chat.gql'
+import { UserIdQuery, UserIdQueryVariables } from '../__generated__/graphql'
+import { USERID } from '../features/auth/auth.gql'
+import { ADD_MESSAGE } from '../features/texting/chat.gql'
+import { AddMessageMutation, AddMessageMutationVariables } from '../__generated__/graphql'
+import { MessageTypes } from '../__generated__/graphql'
 
 interface Iprops {
   refetchLoginStatus: () => void
@@ -39,6 +43,12 @@ interface Iprops {
 
 export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
   const userId = '2'
+  const [chatID, setChatID] = useState('')
+  const [msg, setMsg] = useState('')
+  const [addMessage, { loading: loading3 }] = useMutation<
+    AddMessageMutation,
+    AddMessageMutationVariables
+  >(ADD_MESSAGE)
 
   const theme = useMantineTheme()
   const [opened, { open, close }] = useDisclosure(false)
@@ -52,6 +62,12 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
     ChatMessagesQuery,
     ChatMessagesQueryVariables
   >(GET_CHAT_MESSAGES, {
+    onError: (error) => {
+      console.log(error)
+      open()
+    },
+  })
+  const { data: data3 } = useQuery<UserIdQuery, UserIdQueryVariables>(USERID, {
     onError: (error) => {
       console.log(error)
       open()
@@ -74,6 +90,8 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
   })
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
+
+  console.log(data3?.userID)
 
   const logoutLogic = async (): Promise<void> => {
     await logout()
@@ -114,6 +132,7 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
                   label={`Chat ID: ${i.id}`}
                   description={`Members are ${i.membersNames.toString()}`}
                   onClick={async () => {
+                    setChatID(i.id)
                     await getMessages({ variables: { chatId: i.id } })
                   }}
                 />
@@ -190,6 +209,10 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
                 radius="md"
                 size="md"
                 w={'100%'}
+                onChange={(e) => {
+                  setMsg(e.target.value)
+                }}
+                value={msg}
                 placeholder="Write a message..."
                 rightSectionWidth={42}
                 leftSection={
@@ -208,6 +231,16 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
                     radius="md"
                     color={theme.colors['primary'][1]}
                     variant="filled"
+                    onClick={async () => {
+                      const time = '1733130045000'
+                      await addMessage({
+                        variables: {
+                          msg: { type: MessageTypes.Text, content: msg, time, chatId: chatID },
+                        },
+                      })
+                      setMsg('')
+                    }}
+                    loading={loading3}
                   >
                     <IconArrowRight size={18} stroke={1.5} />
                   </ActionIcon>

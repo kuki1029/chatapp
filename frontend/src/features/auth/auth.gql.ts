@@ -29,3 +29,9 @@ export const LOGOUT = gql`
     logout
   }
 `
+
+export const USERID = gql`
+  query userID {
+    userID
+  }
+`

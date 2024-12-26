@@ -22,6 +22,9 @@ export const userResolvers = {
       }
       return false;
     },
+    userID: async (_: unknown, __: unknown, ctx: MyContext) => {
+      return ctx.userID;
+    },
   },
   Mutation: {
     signup: async (
