@@ -22,6 +22,7 @@ export const GET_USER_CHATS = gql`
     userChats {
       id
       membersID
+      membersNames
     }
   }
 `
@@ -29,9 +30,11 @@ export const GET_USER_CHATS = gql`
 export const GET_CHAT_MESSAGES = gql`
   query ChatMessages($chatId: String) {
     chatMessages(chatId: $chatId) {
+      id
       content
       time
       type
+      senderId
     }
   }
 `

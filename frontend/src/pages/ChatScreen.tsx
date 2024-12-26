@@ -38,6 +38,8 @@ interface Iprops {
 }
 
 export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
+  const userId = '2'
+
   const theme = useMantineTheme()
   const [opened, { open, close }] = useDisclosure(false)
   const { data: data1 } = useQuery<UserChatsQuery, UserChatsQueryVariables>(GET_USER_CHATS, {
@@ -82,7 +84,6 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
   const emailSub = async () => {
     await createChat({ variables: { email } })
   }
-  console.log(data2?.chatMessages)
 
   return (
     <div>
@@ -111,10 +112,9 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
                 <NavLink
                   key={i.id}
                   label={`Chat ID: ${i.id}`}
-                  description={`Members are ${i.membersID.toString()}`}
+                  description={`Members are ${i.membersNames.toString()}`}
                   onClick={async () => {
                     await getMessages({ variables: { chatId: i.id } })
-                    console.log('A')
                   }}
                 />
               ))
@@ -171,12 +171,15 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
               </Group>
               <ScrollArea>
                 <Flex gap="md" justify="center" align="flex-end" direction="column" wrap="nowrap">
-                  {data.map((i) => {
+                  {data2?.chatMessages.map((i) => {
+                    const date = new Date(parseInt(i.time))
+                    const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getFullYear()).slice(-2)}`
                     return (
                       <ChatBubble
-                        message={i.message}
-                        sender={i.sender === '1' ? 'me' : 'other'}
-                        time={i.time}
+                        key={i.id}
+                        message={i.content}
+                        sender={i.senderId === userId ? 'me' : 'other'}
+                        time={formattedDate}
                       />
                     )
                   })}

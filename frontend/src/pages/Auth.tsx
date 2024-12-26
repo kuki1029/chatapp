@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom'
 interface Iprops {
   refetchLoginStatus: () => void
 }
-
+// TODO: Add error when wrong password
 export const Auth = ({ refetchLoginStatus }: Iprops) => {
   const navigate = useNavigate()
   const [login, { loading, error }] = useMutation<LoginMutation, LoginMutationVariables>(LOGIN, {

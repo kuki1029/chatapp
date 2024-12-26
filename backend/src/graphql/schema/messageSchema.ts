@@ -11,6 +11,7 @@ export const messageTypeDefs = gql`
   }
 
   type Message {
+    id: ID!
     type: MessageTypes!
     content: String!
     time: String!
