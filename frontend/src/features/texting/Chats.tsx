@@ -38,7 +38,7 @@ export const Chats = ({ setChatID }: Iprops) => {
   }
 
   return (
-    <Paper h="90%" shadow="xl" radius="md" p="sm" bg={'white'}>
+    <Paper h="90%" shadow="xl" radius="md" miw={'100%'} p="sm" bg={'blue'}>
       <TextInput
         value={email}
         onChange={(e) => {

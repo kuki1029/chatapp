@@ -18,11 +18,17 @@ const stackStyle = {
   align: 'center',
   justify: 'space-between',
   h: '100%',
+  gap: '7',
 }
 
 export const Messaging = ({ chatID }: Iprops) => {
   const [getMessages, { data }] = useLazyQuery<ChatMessagesQuery, ChatMessagesQueryVariables>(
-    ChatMessagesDocument
+    ChatMessagesDocument,
+    {
+      onCompleted: () => {
+        console.log('HI')
+      },
+    }
   )
   const chatMessages = data?.chatMessages
 
@@ -33,14 +39,14 @@ export const Messaging = ({ chatID }: Iprops) => {
   }, [chatID, getMessages])
 
   return (
-    <Paper h="90%" shadow="xl" miw={'100%'} radius="md" bg={'red'}>
+    <Paper h="90%" shadow="xl" miw={'100%'} radius="md" bg={'red'} p="xs">
       <Stack {...stackStyle}>
         <CurrentChatProfile />
         {chatID && chatMessages ? (
-          <div>
+          <>
             <DisplayMessages messages={chatMessages} />
             <MessageInput chatID={chatID} />
-          </div>
+          </>
         ) : (
           <p>Placeholder for background gradient</p>
         )}

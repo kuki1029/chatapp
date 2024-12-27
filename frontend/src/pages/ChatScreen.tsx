@@ -14,9 +14,6 @@ interface Iprops {
 
 const centerStyle = {
   h: '100vh',
-  style: {
-    minHeight: '100%',
-  },
 }
 
 export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
@@ -44,19 +41,19 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
       <Modal opened={opened} onClose={close} withCloseButton={false}>
         There was an error. Please refresh the page.
       </Modal>
-      <Grid h="100%" grow overflow="hidden" pr={'2%'}>
-        <Grid.Col span={4}>
+      <Grid h="100%" grow overflow="hidden" pl={'2%'} pr={'2%'}>
+        <Grid.Col span={3}>
           <Center {...centerStyle}>
             <Chats setChatID={setChatID} />
           </Center>
         </Grid.Col>
-        <Grid.Col span={8}>
+        <Grid.Col span={9}>
           <Center {...centerStyle}>
             <Messaging chatID={chatID} />
           </Center>
         </Grid.Col>
       </Grid>
-      <Button text="Logout" loading={loading} onClick={logoutLogic} />
+      {/* <Button text="Logout" loading={loading} onClick={logoutLogic} /> */}
     </div>
   )
 }

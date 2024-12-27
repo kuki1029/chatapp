@@ -18,7 +18,7 @@ export const CurrentChatProfile = () => {
           </Text>
 
           <Text c="dimmed" size="xs">
-            Typing...
+            Last Seen: Now
           </Text>
         </div>
       </Group>

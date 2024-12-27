@@ -19,8 +19,8 @@ export const DisplayMessages = ({ messages }: Iprops) => {
   })
 
   return (
-    <ScrollArea viewportRef={scrollView}>
-      <Flex gap="md" justify="center" align="flex-end" direction="column" wrap="nowrap">
+    <ScrollArea miw={'100%'} viewportRef={scrollView}>
+      <Flex gap="7" justify="center" align="flex-end" direction="column" wrap="nowrap">
         {messages.map((msg) => {
           const date = new Date(parseInt(msg.time)) //TODO: Research if better way to get this time or store in BE
           const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getFullYear()).slice(-2)}`

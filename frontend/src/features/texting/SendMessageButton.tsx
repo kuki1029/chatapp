@@ -6,6 +6,7 @@ import {
   AddMessageMutation,
   AddMessageMutationVariables,
   AddMessageDocument,
+  ChatMessagesDocument,
 } from '../../__generated__/graphql'
 
 interface Iprops {
@@ -23,6 +24,18 @@ export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
       onError: (error) => {
         console.log(error) //TODO: Handle errors properly
       },
+      // Assumes some shape of the object and updates cache instantly to provide
+      // quick UI response. Apollo will update the object later after response comes from server
+      optimisticResponse: {
+        addMessage: {
+          __typename: 'Message',
+          content: msg,
+          id: 'temp-id-2',
+          time: '1733130045000', //TODO: Fix time
+          type: MessageTypes.Text,
+        },
+      },
+      refetchQueries: [ChatMessagesDocument],
     }
   )
 
@@ -38,6 +51,17 @@ export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
           variables: {
             msg: { type: MessageTypes.Text, content: msg, time, chatId: chatID },
           },
+          // update: (cache, data) => {
+          //   const data1 = cache.readQuery({ query: ChatMessagesDocument })
+          //   if (!data1) {
+          //     return
+          //   }
+          //   data1.chatMessages = [
+          //     ...data1.chatMessages,
+          //     { ...data.data?.addMessage, __typename: 'Message' },
+          //   ]
+          //   console.log(data)
+          // },
         })
         setMsg('')
       }}

@@ -13,6 +13,9 @@ export const ADD_MESSAGE = gql`
   mutation AddMessage($msg: MessageInput!) {
     addMessage(msg: $msg) {
       content
+      id
+      time
+      type
     }
   }
 `
