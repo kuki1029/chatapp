@@ -24,6 +24,13 @@ export const LOGGED_IN = gql`
   }
 `
 
+export const LOGGED_IN_AND_USERID = gql`
+  query LoggedInAndUserID {
+    userID
+    isLoggedIn
+  }
+`
+
 export const LOGOUT = gql`
   mutation logout {
     logout

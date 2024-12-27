@@ -1,97 +1,37 @@
 import { Button } from '../components/Button'
-import { useMutation, useQuery, useLazyQuery } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { LogoutMutation, LogoutMutationVariables } from '../__generated__/graphql'
 import { LOGOUT } from '../features/auth/auth.gql'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
-import {
-  Modal,
-  Paper,
-  Stack,
-  Center,
-  NavLink,
-  TextInput,
-  Text,
-  ActionIcon,
-  useMantineTheme,
-  Flex,
-  Group,
-  Avatar,
-  ScrollArea,
-} from '@mantine/core'
-import { IconArrowRight, IconPlus, IconVideoPlus } from '@tabler/icons-react'
-import { ChatBubble } from '../features/texting/ChatBubble'
+import { Modal, Center, Flex, Grid } from '@mantine/core'
 import { useState } from 'react'
-import {
-  CreateChatWithEmailMutation,
-  CreateChatWithEmailMutationVariables,
-} from '../__generated__/graphql'
-import { CREATE_CHAT_WITH_EMAIL } from '../features/texting/chat.gql'
-import { UserChatsQuery, UserChatsQueryVariables } from '../__generated__/graphql'
-import { GET_USER_CHATS } from '../features/texting/chat.gql'
-import { ChatMessagesQuery, ChatMessagesQueryVariables } from '../__generated__/graphql'
-import { GET_CHAT_MESSAGES } from '../features/texting/chat.gql'
-import { UserIdQuery, UserIdQueryVariables } from '../__generated__/graphql'
-import { USERID } from '../features/auth/auth.gql'
-import { ADD_MESSAGE } from '../features/texting/chat.gql'
-import { AddMessageMutation, AddMessageMutationVariables } from '../__generated__/graphql'
-import { MessageTypes } from '../__generated__/graphql'
-
+import { Messaging } from '../features/texting/Messaging'
+import { Chats } from '../features/texting/Chats'
 interface Iprops {
   refetchLoginStatus: () => void
 }
 
-export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
-  const userId = '2'
-  const [chatID, setChatID] = useState('')
-  const [msg, setMsg] = useState('')
-  const [addMessage, { loading: loading3 }] = useMutation<
-    AddMessageMutation,
-    AddMessageMutationVariables
-  >(ADD_MESSAGE)
+const centerStyle = {
+  h: '100vh',
+  style: {
+    minHeight: '100%',
+  },
+}
 
-  const theme = useMantineTheme()
+export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
+  const [chatID, setChatID] = useState<string | undefined>()
+
   const [opened, { open, close }] = useDisclosure(false)
-  const { data: data1 } = useQuery<UserChatsQuery, UserChatsQueryVariables>(GET_USER_CHATS, {
-    onError: (error) => {
-      console.log(error)
-      open()
-    },
-  })
-  const [getMessages, { data: data2 }] = useLazyQuery<
-    ChatMessagesQuery,
-    ChatMessagesQueryVariables
-  >(GET_CHAT_MESSAGES, {
-    onError: (error) => {
-      console.log(error)
-      open()
-    },
-  })
-  const { data: data3 } = useQuery<UserIdQuery, UserIdQueryVariables>(USERID, {
-    onError: (error) => {
-      console.log(error)
-      open()
-    },
-  })
+
   const [logout, { loading }] = useMutation<LogoutMutation, LogoutMutationVariables>(LOGOUT, {
     onError: (error) => {
       console.log(error)
       open()
     },
   })
-  const [createChat, { loading: loadingCreateChat }] = useMutation<
-    CreateChatWithEmailMutation,
-    CreateChatWithEmailMutationVariables
-  >(CREATE_CHAT_WITH_EMAIL, {
-    onError: (error) => {
-      console.log(error)
-      open()
-    },
-  })
-  const navigate = useNavigate()
-  const [email, setEmail] = useState('')
 
-  console.log(data3?.userID)
+  const navigate = useNavigate()
 
   const logoutLogic = async (): Promise<void> => {
     await logout()
@@ -99,157 +39,23 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
     navigate('/login')
   }
 
-  const emailSub = async () => {
-    await createChat({ variables: { email } })
-  }
-
   return (
     <div>
-      <Flex h="100%" gap="md" justify="flex-end" align="flex-end" direction="row">
-        <Center
-          h="100vh"
-          style={{
-            maxWidth: '40%',
-            minHeight: '100%',
-            margin: '0 auto',
-          }}
-        >
-          {/* Temp stuff for chat access */}
-          <Paper h="90%" shadow="xl" radius="md" p="sm" bg={'white'}>
-            <TextInput
-              value={email}
-              onChange={(e) => {
-                setEmail(e.currentTarget.value)
-              }}
-              label="email temp"
-              placeholder="email"
-            />
-            <Button text="new chat" onClick={emailSub} loading={loadingCreateChat}></Button>
-            {data1 ? (
-              data1.userChats.map((i) => (
-                <NavLink
-                  key={i.id}
-                  label={`Chat ID: ${i.id}`}
-                  description={`Members are ${i.membersNames.toString()}`}
-                  onClick={async () => {
-                    setChatID(i.id)
-                    await getMessages({ variables: { chatId: i.id } })
-                  }}
-                />
-              ))
-            ) : (
-              <p>Loading</p>
-            )}
-          </Paper>
-        </Center>
-        <Modal opened={opened} onClose={close} withCloseButton={false}>
-          There was an error. Please refresh the page.
-        </Modal>
-        <Center
-          h="100vh"
-          style={{
-            maxWidth: '40%',
-            minHeight: '100%',
-            margin: '0 auto',
-          }}
-        >
-          <Paper h="90%" shadow="xl" radius="md" p="sm" bg={'white'}>
-            <Stack
-              bg="var(--mantine-color-body)"
-              align="center"
-              justify="space-between"
-              h="100%"
-              style={{
-                margin: '1',
-              }}
-            >
-              <Group w={'100%'} justify="space-between">
-                <Group style={{ gap: '0.5rem' }}>
-                  <Avatar color="blue" radius="sm">
-                    KV
-                  </Avatar>
-                  <div style={{ flex: 1, margin: '-2' }}>
-                    <Text size="sm" fw={500}>
-                      Kunal Varkekar
-                    </Text>
-
-                    <Text c="dimmed" size="xs">
-                      Typing...
-                    </Text>
-                  </div>
-                </Group>
-
-                <ActionIcon
-                  size={32}
-                  radius="md"
-                  color={theme.colors['primary'][1]}
-                  variant="filled"
-                >
-                  <IconVideoPlus size={18} stroke={1.5} />
-                </ActionIcon>
-              </Group>
-              <ScrollArea>
-                <Flex gap="md" justify="center" align="flex-end" direction="column" wrap="nowrap">
-                  {data2?.chatMessages.map((i) => {
-                    const date = new Date(parseInt(i.time))
-                    const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getFullYear()).slice(-2)}`
-                    return (
-                      <ChatBubble
-                        key={i.id}
-                        message={i.content}
-                        sender={i.senderId === userId ? 'me' : 'other'}
-                        time={formattedDate}
-                      />
-                    )
-                  })}
-                </Flex>
-              </ScrollArea>
-
-              <TextInput
-                radius="md"
-                size="md"
-                w={'100%'}
-                onChange={(e) => {
-                  setMsg(e.target.value)
-                }}
-                value={msg}
-                placeholder="Write a message..."
-                rightSectionWidth={42}
-                leftSection={
-                  <ActionIcon
-                    size={28}
-                    radius="md"
-                    color={theme.colors['primary'][1]}
-                    variant="filled"
-                  >
-                    <IconPlus size={18} stroke={1.5} />
-                  </ActionIcon>
-                }
-                rightSection={
-                  <ActionIcon
-                    size={32}
-                    radius="md"
-                    color={theme.colors['primary'][1]}
-                    variant="filled"
-                    onClick={async () => {
-                      const time = '1733130045000'
-                      await addMessage({
-                        variables: {
-                          msg: { type: MessageTypes.Text, content: msg, time, chatId: chatID },
-                        },
-                      })
-                      setMsg('')
-                    }}
-                    loading={loading3}
-                  >
-                    <IconArrowRight size={18} stroke={1.5} />
-                  </ActionIcon>
-                }
-              />
-            </Stack>
-          </Paper>
-        </Center>
-      </Flex>
+      <Modal opened={opened} onClose={close} withCloseButton={false}>
+        There was an error. Please refresh the page.
+      </Modal>
+      <Grid h="100%" grow overflow="hidden" pr={'2%'}>
+        <Grid.Col span={4}>
+          <Center {...centerStyle}>
+            <Chats setChatID={setChatID} />
+          </Center>
+        </Grid.Col>
+        <Grid.Col span={8}>
+          <Center {...centerStyle}>
+            <Messaging chatID={chatID} />
+          </Center>
+        </Grid.Col>
+      </Grid>
       <Button text="Logout" loading={loading} onClick={logoutLogic} />
     </div>
   )

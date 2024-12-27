@@ -17,6 +17,7 @@ const documents = {
     "\n  mutation login($email: String!, $password: String!) {\n    login(email: $email, password: $password) {\n      email\n      name\n    }\n  }\n": types.LoginDocument,
     "\n  mutation signup($name: String!, $password: String!, $email: String!) {\n    signup(name: $name, password: $password, email: $email) {\n      name\n      email\n    }\n  }\n": types.SignupDocument,
     "\n  query isLoggedIn {\n    isLoggedIn\n  }\n": types.IsLoggedInDocument,
+    "\n  query LoggedInAndUserID {\n    userID\n    isLoggedIn\n  }\n": types.LoggedInAndUserIdDocument,
     "\n  mutation logout {\n    logout\n  }\n": types.LogoutDocument,
     "\n  query userID {\n    userID\n  }\n": types.UserIdDocument,
     "\n  mutation CreateChatWithEmail($email: String) {\n    createChatWithEmail(email: $email) {\n      membersID\n      id\n    }\n  }\n": types.CreateChatWithEmailDocument,
@@ -51,6 +52,10 @@ export function gql(source: "\n  mutation signup($name: String!, $password: Stri
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  query isLoggedIn {\n    isLoggedIn\n  }\n"): (typeof documents)["\n  query isLoggedIn {\n    isLoggedIn\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query LoggedInAndUserID {\n    userID\n    isLoggedIn\n  }\n"): (typeof documents)["\n  query LoggedInAndUserID {\n    userID\n    isLoggedIn\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

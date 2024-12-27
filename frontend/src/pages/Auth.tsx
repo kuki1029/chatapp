@@ -2,8 +2,7 @@ import { Divider, Group, Paper, Title, Center, Container, Modal } from '@mantine
 import { GoogleButton } from '../utility/GoogleButton.tsx'
 import { AuthForm } from '../features/auth/AuthForm.tsx'
 import { useMutation } from '@apollo/client'
-import { LOGIN } from '../features/auth/auth.gql'
-import { LoginMutation, LoginMutationVariables } from '../__generated__/graphql'
+import { LoginMutation, LoginMutationVariables, LoginDocument } from '../__generated__/graphql'
 import { useNavigate } from 'react-router-dom'
 
 interface Iprops {
@@ -12,17 +11,20 @@ interface Iprops {
 // TODO: Add error when wrong password
 export const Auth = ({ refetchLoginStatus }: Iprops) => {
   const navigate = useNavigate()
-  const [login, { loading, error }] = useMutation<LoginMutation, LoginMutationVariables>(LOGIN, {
-    onError: (error) => {
-      console.log(error)
-    },
-    onCompleted: (data) => {
-      if (data.login) {
-        refetchLoginStatus()
-        navigate('/')
-      }
-    },
-  })
+  const [login, { loading, error }] = useMutation<LoginMutation, LoginMutationVariables>(
+    LoginDocument,
+    {
+      onError: (error) => {
+        console.log(error)
+      },
+      onCompleted: (data) => {
+        if (data.login) {
+          refetchLoginStatus()
+          navigate('/')
+        }
+      },
+    }
+  )
 
   return (
     <Center h={'100vh'}>
