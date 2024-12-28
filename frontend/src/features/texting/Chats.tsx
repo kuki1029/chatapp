@@ -1,23 +1,8 @@
-import {
-  Paper,
-  ScrollArea,
-  Stack,
-  NavLink,
-  useMantineTheme,
-  Title,
-  LoadingOverlay,
-  Group,
-  ActionIcon,
-} from '@mantine/core'
-import {
-  UserChatsQuery,
-  UserChatsQueryVariables,
-  UserChatsDocument,
-} from '../../__generated__/graphql'
-import { useMutation, useQuery } from '@apollo/client'
+import { Paper, Stack, useMantineTheme, Title, Group, ActionIcon } from '@mantine/core'
 import { useState } from 'react'
 import { IconMailPlus, IconUserSearch, IconUserCircle, IconBrandLine } from '@tabler/icons-react'
 import { CreateNewChat } from './CreateNewChat'
+import { IndividualChatDisplay } from './IndividualChatDisplay'
 
 const stackStyle = {
   h: '100%',
@@ -37,21 +22,14 @@ interface Iprops {
 
 export const Chats = ({ setChatID }: Iprops) => {
   const [currentView, setCurrentView] = useState<ChatsDisplay>(ChatsDisplay.CHATS)
-  const [active, setActive] = useState(-1)
   const theme = useMantineTheme()
-  const { data } = useQuery<UserChatsQuery, UserChatsQueryVariables>(UserChatsDocument, {
-    onError: (error) => {
-      console.log(error)
-      open()
-    },
-  })
 
   return (
-    <Paper h="90%" shadow="xl" radius="md" miw={'100%'}>
+    <Paper withBorder h="90%" shadow="xl" radius="md" miw={'100%'} style={{ zIndex: 9999 }}>
       <Stack {...stackStyle}>
         {/* TODO: Move this to own component */}
         {/* TODO: Add hover tooltips to action icons */}
-
+        {/* TODO: Add active icon to action button */}
         <Group p={'xs'} miw={'100%'}>
           <ActionIcon
             size={'lg'}
@@ -88,26 +66,7 @@ export const Chats = ({ setChatID }: Iprops) => {
             <Title pl={'3%'} order={2}>
               Chats
             </Title>
-            <ScrollArea miw={'100%'} scrollHideDelay={0}>
-              {data ? (
-                data.userChats.map((chat, index) => (
-                  <NavLink
-                    key={chat.id}
-                    label={`Chat ID: ${chat.id}`}
-                    active={index === active}
-                    description={`Members are ${chat.membersNames.toString()}`}
-                    onClick={() => {
-                      setActive(index)
-                      setChatID(chat.id)
-                    }}
-                    variant="light"
-                    color="primary"
-                  />
-                ))
-              ) : (
-                <LoadingOverlay />
-              )}
-            </ScrollArea>
+            <IndividualChatDisplay setChatID={setChatID} />
           </>
         ) : (
           <CreateNewChat />

@@ -8,6 +8,8 @@ import { Modal, Center, Grid } from '@mantine/core'
 import { useState } from 'react'
 import { Messaging } from '../features/texting/Messaging'
 import { Chats } from '../features/texting/Chats'
+import { Orbs } from '../utility/Orbs.tsx'
+
 interface Iprops {
   refetchLoginStatus: () => void
 }
@@ -38,10 +40,11 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
 
   return (
     <div>
+      <Orbs />
       <Modal opened={opened} onClose={close} withCloseButton={false}>
         There was an error. Please refresh the page.
       </Modal>
-      <Grid h="100%" grow overflow="hidden" pl={'2%'} pr={'2%'}>
+      <Grid h="100%" grow overflow="hidden" pl={'2%'} pr={'2%'} style={{ zIndex: 999 }}>
         <Grid.Col span={3}>
           <Center {...centerStyle}>
             <Chats setChatID={setChatID} />

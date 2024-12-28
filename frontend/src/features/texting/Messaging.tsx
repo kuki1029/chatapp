@@ -34,7 +34,14 @@ export const Messaging = ({ chatID }: Iprops) => {
   }, [chatID, getMessages])
 
   return (
-    <Paper h="90%" shadow="xl" miw={'100%'} radius="md" p="xs">
+    <Paper
+      h="90%"
+      shadow="xl"
+      miw={'100%'}
+      radius="md"
+      p="xs"
+      style={{ zIndex: 9999, background: 'rgba(255,255,255,.5)' }}
+    >
       <Stack {...stackStyle}>
         <CurrentChatProfile />
         {chatID && chatMessages ? (
