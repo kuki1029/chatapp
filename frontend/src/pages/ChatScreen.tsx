@@ -4,7 +4,7 @@ import { LogoutMutation, LogoutMutationVariables } from '../__generated__/graphq
 import { LOGOUT } from '../features/auth/auth.gql'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
-import { Modal, Center, Flex, Grid } from '@mantine/core'
+import { Modal, Center, Grid } from '@mantine/core'
 import { useState } from 'react'
 import { Messaging } from '../features/texting/Messaging'
 import { Chats } from '../features/texting/Chats'
@@ -53,7 +53,7 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
           </Center>
         </Grid.Col>
       </Grid>
-      {/* <Button text="Logout" loading={loading} onClick={logoutLogic} /> */}
+      <Button text="Logout" loading={loading} onClick={logoutLogic} />
     </div>
   )
 }

@@ -51,17 +51,6 @@ export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
           variables: {
             msg: { type: MessageTypes.Text, content: msg, time, chatId: chatID },
           },
-          // update: (cache, data) => {
-          //   const data1 = cache.readQuery({ query: ChatMessagesDocument })
-          //   if (!data1) {
-          //     return
-          //   }
-          //   data1.chatMessages = [
-          //     ...data1.chatMessages,
-          //     { ...data.data?.addMessage, __typename: 'Message' },
-          //   ]
-          //   console.log(data)
-          // },
         })
         setMsg('')
       }}

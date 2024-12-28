@@ -23,12 +23,7 @@ const stackStyle = {
 
 export const Messaging = ({ chatID }: Iprops) => {
   const [getMessages, { data }] = useLazyQuery<ChatMessagesQuery, ChatMessagesQueryVariables>(
-    ChatMessagesDocument,
-    {
-      onCompleted: () => {
-        console.log('HI')
-      },
-    }
+    ChatMessagesDocument
   )
   const chatMessages = data?.chatMessages
 
@@ -39,7 +34,7 @@ export const Messaging = ({ chatID }: Iprops) => {
   }, [chatID, getMessages])
 
   return (
-    <Paper h="90%" shadow="xl" miw={'100%'} radius="md" bg={'red'} p="xs">
+    <Paper h="90%" shadow="xl" miw={'100%'} radius="md" p="xs">
       <Stack {...stackStyle}>
         <CurrentChatProfile />
         {chatID && chatMessages ? (

@@ -20,6 +20,11 @@ export const theme = createTheme({
       dark: 'dark-0',
       light: 'white',
     }),
+    secondary: virtualColor({
+      name: 'secondary',
+      dark: 'white',
+      light: 'dark-0',
+    }),
   },
   headings: { fontFamily: 'sans-serif' },
 })
