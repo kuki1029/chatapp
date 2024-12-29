@@ -22,7 +22,7 @@ const client = new ApolloClient({
 
 createRoot(rootElem).render(
   <ApolloProvider client={client}>
-    <MantineProvider theme={theme} defaultColorScheme="light">
+    <MantineProvider theme={theme} defaultColorScheme="dark">
       <Router
         future={{
           v7_relativeSplatPath: true,

@@ -1,4 +1,4 @@
-import { Paper, Stack } from '@mantine/core'
+import { Paper, Stack, Text, useComputedColorScheme } from '@mantine/core'
 import { useEffect } from 'react'
 import { useLazyQuery } from '@apollo/client'
 import {
@@ -9,6 +9,7 @@ import {
 import { MessageInput } from './MessageInput'
 import { CurrentChatProfile } from './CurrentChatProfile'
 import { DisplayMessages } from './DisplayMessages'
+import { useColorScheme } from '../../utility/useColorScheme'
 
 interface Iprops {
   chatID: string | undefined
@@ -22,6 +23,7 @@ const stackStyle = {
 }
 
 export const Messaging = ({ chatID }: Iprops) => {
+  const colors = useColorScheme()
   const [getMessages, { data }] = useLazyQuery<ChatMessagesQuery, ChatMessagesQueryVariables>(
     ChatMessagesDocument
   )
@@ -40,7 +42,7 @@ export const Messaging = ({ chatID }: Iprops) => {
       miw={'100%'}
       radius="md"
       p="xs"
-      style={{ zIndex: 9999, background: 'rgba(255,255,255,.5)' }}
+      style={{ zIndex: 9999, background: colors.bgColor }}
     >
       <Stack {...stackStyle}>
         <CurrentChatProfile />
@@ -50,7 +52,7 @@ export const Messaging = ({ chatID }: Iprops) => {
             <MessageInput chatID={chatID} />
           </>
         ) : (
-          <p>Placeholder for background gradient</p>
+          <Text h={'50%'}>Choose a chat!</Text>
         )}
       </Stack>
     </Paper>

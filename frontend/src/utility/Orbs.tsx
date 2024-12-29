@@ -1,10 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
+import React from 'react'
 import './orbs.css'
+
+// Utility functions
 const random = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min)
 const iterate = (count: number, mapper: (i: number) => React.ReactNode) =>
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   [...new Array(count)].map((_, i) => mapper(i))
-
 const distance = (a: number[], b: number[]) => Math.hypot(a[0] - b[0], a[1] - b[1])
 
 const Gooey = ({ id }: { id: string }) => (
@@ -72,9 +73,9 @@ const Orb = ({ hue }: { hue: number }) => {
   )
 }
 
-export const Orbs = () => {
-  const ORB_COUNT = 20
-  const hue = 200
+export const Orbs = React.memo(() => {
+  const ORB_COUNT = 5
+  const hue = 43 // orange
   return (
     <svg
       preserveAspectRatio="xMinYMin slice"
@@ -95,4 +96,4 @@ export const Orbs = () => {
       </defs>
     </svg>
   )
-}
+})

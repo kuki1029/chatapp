@@ -1,11 +1,12 @@
 import { useQuery } from '@apollo/client'
-import { ScrollArea, LoadingOverlay, NavLink } from '@mantine/core'
+import { ScrollArea, LoadingOverlay, NavLink, Avatar } from '@mantine/core'
 import {
   UserChatsQuery,
   UserChatsQueryVariables,
   UserChatsDocument,
 } from '../../__generated__/graphql'
 import { useState } from 'react'
+import { upperFirst } from '@mantine/hooks'
 
 interface Iprops {
   setChatID: React.Dispatch<React.SetStateAction<string | undefined>>
@@ -26,15 +27,17 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
         data.userChats.map((chat, index) => (
           <NavLink
             key={chat.id}
-            label={`Chat ID: ${chat.id}`}
+            label={upperFirst(chat.membersNames.toString())}
+            description={`Last Message Here. Time. `}
             active={index === active}
-            description={`Members are ${chat.membersNames.toString()}`}
             onClick={() => {
               setActive(index)
               setChatID(chat.id)
             }}
-            variant="light"
-            color="primary"
+            variant="filled"
+            autoContrast
+            color="dark"
+            leftSection={<Avatar>KV</Avatar>}
           />
         ))
       ) : (

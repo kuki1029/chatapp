@@ -8,6 +8,7 @@ import {
   AddMessageDocument,
   ChatMessagesDocument,
 } from '../../__generated__/graphql'
+import { useColorScheme } from '../../utility/useColorScheme'
 
 interface Iprops {
   chatID: string
@@ -17,7 +18,7 @@ interface Iprops {
 
 //TODO: Either disable button or remove when chat not selected
 export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
-  const theme = useMantineTheme()
+  const color = useColorScheme()
   const [addMessage, { loading }] = useMutation<AddMessageMutation, AddMessageMutationVariables>(
     AddMessageDocument,
     {
@@ -26,11 +27,12 @@ export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
       },
       // Assumes some shape of the object and updates cache instantly to provide
       // quick UI response. Apollo will update the object later after response comes from server
+      //TODO: Test this when in prod
       optimisticResponse: {
         addMessage: {
           __typename: 'Message',
           content: msg,
-          id: 'temp-id-2',
+          id: 'temp-id',
           time: '1733130045000', //TODO: Fix time
           type: MessageTypes.Text,
         },
@@ -43,7 +45,7 @@ export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
     <ActionIcon
       size={32}
       radius="md"
-      color={theme.colors['primary'][1]}
+      color={color.buttons}
       variant="filled"
       onClick={async () => {
         const time = '1733130045000'

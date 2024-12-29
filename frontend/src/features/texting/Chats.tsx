@@ -1,8 +1,9 @@
-import { Paper, Stack, useMantineTheme, Title, Group, ActionIcon } from '@mantine/core'
+import { Paper, Stack, Title, Group, ActionIcon, useComputedColorScheme } from '@mantine/core'
 import { useState } from 'react'
 import { IconMailPlus, IconUserSearch, IconUserCircle, IconBrandLine } from '@tabler/icons-react'
 import { CreateNewChat } from './CreateNewChat'
 import { IndividualChatDisplay } from './IndividualChatDisplay'
+import { useColorScheme } from '../../utility/useColorScheme'
 
 const stackStyle = {
   h: '100%',
@@ -22,20 +23,26 @@ interface Iprops {
 
 export const Chats = ({ setChatID }: Iprops) => {
   const [currentView, setCurrentView] = useState<ChatsDisplay>(ChatsDisplay.CHATS)
-  const theme = useMantineTheme()
+  const colors = useColorScheme()
 
   return (
-    <Paper withBorder h="90%" shadow="xl" radius="md" miw={'100%'} style={{ zIndex: 9999 }}>
+    <Paper
+      h="90%"
+      shadow="xl"
+      radius="md"
+      miw={'100%'}
+      style={{ zIndex: 9999, background: colors.bgColor }}
+    >
       <Stack {...stackStyle}>
         {/* TODO: Move this to own component */}
         {/* TODO: Add hover tooltips to action icons */}
         {/* TODO: Add active icon to action button */}
-        <Group p={'xs'} miw={'100%'}>
+        <Group p={'md'} miw={'100%'} justify="space-between">
           <ActionIcon
-            size={'lg'}
+            size={'xl'}
             radius="md"
-            color={theme.colors['primary'][1]}
-            variant="filled"
+            color="primary"
+            variant="subtle"
             onClick={() => {
               setCurrentView(ChatsDisplay.CHATS)
             }}
@@ -43,21 +50,21 @@ export const Chats = ({ setChatID }: Iprops) => {
             <IconBrandLine size={18} stroke={1.5} />
           </ActionIcon>
           <ActionIcon
-            size={'lg'}
+            size={'xl'}
             radius="md"
-            color={theme.colors['primary'][1]}
-            variant="filled"
+            color="primary"
+            variant="subtle"
             onClick={() => {
               setCurrentView(ChatsDisplay.FRIENDS)
             }}
           >
             <IconMailPlus size={18} stroke={1.5} />
           </ActionIcon>
-          <ActionIcon size={'lg'} radius="md" color={theme.colors['primary'][1]} variant="filled">
+          <ActionIcon size={'xl'} radius="md" color="primary" variant="subtle">
             <IconUserSearch size={18} stroke={1.5} />
           </ActionIcon>
           {/* TODO: Replace with pic of user profile */}
-          <ActionIcon size={'lg'} radius="md" color={theme.colors['primary'][1]} variant="filled">
+          <ActionIcon size={'xl'} radius="md" color="primary" variant="subtle">
             <IconUserCircle size={18} stroke={1.5} />
           </ActionIcon>
         </Group>

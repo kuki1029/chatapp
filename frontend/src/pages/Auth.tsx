@@ -15,7 +15,7 @@ export const Auth = ({ refetchLoginStatus }: Iprops) => {
     LoginDocument,
     {
       onError: (error) => {
-        console.log(error)
+        console.log(error) //TODO: Handle error properly
       },
       onCompleted: (data) => {
         if (data.login) {

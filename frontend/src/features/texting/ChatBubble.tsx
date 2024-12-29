@@ -11,7 +11,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, sender, time })
   if (sender === 'me') {
     return (
       <Container
-        bg={'#fddfd3'}
+        bg={'#ffffff'}
         style={{
           borderRadius: '6px 6px 1px 6px',
           marginLeft: 'auto',
@@ -20,7 +20,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, sender, time })
           paddingBottom: '0.3rem',
         }}
       >
-        <Text size="sm" fw={200}>
+        <Text size="sm" c="secondary" fw={200}>
           {message}
         </Text>
         <Text ta={'right'} c="dimmed" style={{ fontSize: '0.5rem' }}>
@@ -31,7 +31,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, sender, time })
   } else {
     return (
       <Container
-        bg={'#d3d8fd'}
+        bg={'#000000'}
         style={{
           borderRadius: '6px 6px 6px 1px',
           marginLeft: 0,
@@ -40,7 +40,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, sender, time })
           paddingBottom: '0.3rem',
         }}
       >
-        <Text size="sm" fw={200}>
+        <Text size="sm" c={'white'} fw={200}>
           {message}
         </Text>
         <Text ta={'left'} c="dimmed" style={{ fontSize: '0.5rem' }}>
