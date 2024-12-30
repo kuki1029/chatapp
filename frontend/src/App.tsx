@@ -12,7 +12,6 @@ import { useState } from 'react'
 import { LoggedInAndUserIdQuery, LoggedInAndUserIdQueryVariables } from './__generated__/graphql.ts'
 import { LOGGED_IN_AND_USERID } from './features/auth/auth.gql.ts'
 import { UserIdContext } from './features/auth/UserIDContext.tsx'
-import { Orbs } from './utility/Orbs.tsx'
 
 function App() {
   const isLoginPage = useMatch('/login')

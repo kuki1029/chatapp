@@ -43,7 +43,7 @@ export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
 
   return (
     <ActionIcon
-      size={32}
+      size={24}
       radius="md"
       color={color.buttons}
       variant="filled"

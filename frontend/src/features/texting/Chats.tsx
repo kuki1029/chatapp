@@ -24,7 +24,7 @@ interface Iprops {
 export const Chats = ({ setChatID }: Iprops) => {
   const [currentView, setCurrentView] = useState<ChatsDisplay>(ChatsDisplay.CHATS)
   const colors = useColorScheme()
-
+  console.log(colors.primary)
   return (
     <Paper
       h="90%"
@@ -39,9 +39,9 @@ export const Chats = ({ setChatID }: Iprops) => {
         {/* TODO: Add active icon to action button */}
         <Group p={'md'} miw={'100%'} justify="space-between">
           <ActionIcon
-            size={'xl'}
+            size={'lg'}
             radius="md"
-            color="primary"
+            color={colors.primary}
             variant="subtle"
             onClick={() => {
               setCurrentView(ChatsDisplay.CHATS)
@@ -50,9 +50,9 @@ export const Chats = ({ setChatID }: Iprops) => {
             <IconBrandLine size={18} stroke={1.5} />
           </ActionIcon>
           <ActionIcon
-            size={'xl'}
+            size={'lg'}
             radius="md"
-            color="primary"
+            color={colors.primary}
             variant="subtle"
             onClick={() => {
               setCurrentView(ChatsDisplay.FRIENDS)
@@ -60,17 +60,17 @@ export const Chats = ({ setChatID }: Iprops) => {
           >
             <IconMailPlus size={18} stroke={1.5} />
           </ActionIcon>
-          <ActionIcon size={'xl'} radius="md" color="primary" variant="subtle">
+          <ActionIcon size={'lg'} radius="md" color={colors.primary} variant="subtle">
             <IconUserSearch size={18} stroke={1.5} />
           </ActionIcon>
           {/* TODO: Replace with pic of user profile */}
-          <ActionIcon size={'xl'} radius="md" color="primary" variant="subtle">
+          <ActionIcon size={'lg'} radius="md" color={colors.primary} variant="subtle">
             <IconUserCircle size={18} stroke={1.5} />
           </ActionIcon>
         </Group>
         {currentView === ChatsDisplay.CHATS ? (
           <>
-            <Title pl={'3%'} order={2}>
+            <Title pl={'3%'} order={2} c={colors.primary}>
               Chats
             </Title>
             <IndividualChatDisplay setChatID={setChatID} />

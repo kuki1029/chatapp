@@ -1,5 +1,6 @@
 import React from 'react'
 import { Container, Text } from '@mantine/core'
+import { useColorScheme } from '../../utility/useColorScheme'
 
 interface ChatBubbleProps {
   message: string
@@ -8,6 +9,8 @@ interface ChatBubbleProps {
 }
 
 export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, sender, time }) => {
+  const colors = useColorScheme()
+
   if (sender === 'me') {
     return (
       <Container
@@ -31,7 +34,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, sender, time })
   } else {
     return (
       <Container
-        bg={'#000000'}
+        bg={colors.chatBox}
         style={{
           borderRadius: '6px 6px 6px 1px',
           marginLeft: 0,
