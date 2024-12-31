@@ -1,5 +1,6 @@
 import { Chat, ChatMember, User, ChatMessage } from "../../models/models";
 import { Op } from "sequelize";
+import db from "../../utils/db";
 
 export enum MessageTypes {
   TEXT = "TEXT",
@@ -9,8 +10,7 @@ export enum MessageTypes {
 interface Message {
   type: MessageTypes;
   content: String;
-  time: String;
-  chatId: String;
+  chatID: String;
 }
 
 interface MyContext {
@@ -26,89 +26,95 @@ export const messageResolvers = {
   },
   Query: {
     userChats: async (_: unknown, __: unknown, ctx: MyContext) => {
-      const chatMembers = await ChatMember.findAll({
-        where: { userId: ctx.userID! },
+      const sequelize = db.sequelize;
+      if (!ctx.userID) {
+        return []; // TODO: Add auth middleware so this is never null
+      }
+      const chatsWithAssociations = await Chat.findAll({
         include: [
           {
-            model: Chat,
-            required: true,
+            model: ChatMember,
+            include: [
+              {
+                model: User,
+              },
+            ],
+          },
+          {
+            model: ChatMessage,
+            separate: true,
+            limit: 1,
+            order: [["createdAt", "DESC"]],
           },
         ],
+        where: {
+          id: {
+            [Op.in]: sequelize.literal(`(
+              SELECT "chatId" FROM "members" WHERE "userId" = ${ctx.userID}
+            )`), // No clear simple way to do this directly in sequelize
+          },
+        },
       });
-      // Edge case where user has no chats
-      if (chatMembers.length === 0) {
-        return [];
-      }
-      if (!ctx.userID) {
-        return;
-      }
-      const userId = ctx.userID;
-      const user = await User.findByPk(parseInt(ctx.userID));
-      const chats = chatMembers.map((chatMem) => {
-        const chat = chatMem.dataValues.chat;
+
+      return chatsWithAssociations.map((chat) => {
+        const { id, members, messages } = chat.dataValues;
+
+        const users = members
+          .map((member: any) => member.dataValues.user.dataValues)
+          .filter((user: any) => user.id != ctx.userID);
+        // This technically shouldn't be an array but sequelize returns array as we
+        // use findAll
+        const lastMsg = messages
+          .map((msg: any) => msg.dataValues.content)
+          .toString();
+        const lastMsgTime = messages
+          .map((msg: any) => msg.dataValues.createdAt)
+          .toString();
         return {
-          id: chat.dataValues.id,
-          membersID: chat.dataValues.membersIdList.filter(
-            (_: any, index: Number) =>
-              index !==
-              chat.dataValues.membersIdList.findIndex(
-                (el: Number) => el === parseInt(userId)
-              )
-          ),
-          membersNames: chat.dataValues.membersNameList.filter(
-            (_: any, index: Number) =>
-              index !==
-              chat.dataValues.membersNameList.findIndex(
-                (el: String) => el === user?.dataValues.name
-              )
-          ),
+          id,
+          users,
+          lastMsg,
+          lastMsgTime,
         };
       });
-      return chats;
     },
-    chatMessages: async (_: unknown, args: { chatId: String }) => {
+    chatMessages: async (_: unknown, args: { chatID: String }) => {
       const messages = await ChatMessage.findAll({
-        where: { chatId: args.chatId },
+        where: { chatId: args.chatID },
       });
-      const msgs = messages.map((msg) => {
+      return messages.map((msg) => {
         return {
           ...msg.dataValues,
-          senderId: msg.dataValues.userId,
+          senderID: msg.dataValues.userId,
         };
       });
-      return msgs;
     },
   },
   Mutation: {
-    addMessage: async (_: unknown, args: { msg: Message }, ctx: MyContext) => {
-      const { msg } = args;
-      let type = "ATTACHMENT";
-      if (msg.type === MessageTypes.TEXT) {
-        type = "TEXT";
-      }
-      // const msg: Message = args; TODO: look at simplifying this.
-      // TODO: Remove time requirement in schema or figure out format
+    addMessage: async (
+      _: unknown,
+      { msg }: { msg: Message },
+      ctx: MyContext
+    ) => {
       const createdMsg = await ChatMessage.create({
-        type: type,
-        content: msg.content,
-        chatId: msg.chatId,
+        ...msg,
+        chatId: msg.chatID,
         userId: ctx.userID,
       });
-
       return {
         ...createdMsg.dataValues,
-        senderId: createdMsg.dataValues.userId,
+        senderID: createdMsg.dataValues.userId,
       };
     },
     createChat: async (
       _: unknown,
-      args: { memberId: string | string[] },
+      args: { memberID: string },
       ctx: MyContext
     ) => {
       if (!ctx.userID) {
-        return;
+        return {}; //TODO: Remove with auth middleware
       }
-      const membersID = [...args.memberId];
+      const membersID = [...args.memberID];
 
       const users = await User.findAll({
         where: {
@@ -122,27 +128,25 @@ export const messageResolvers = {
       const mainUser = await User.findByPk(parseInt(ctx.userID));
 
       const chat = await Chat.create({
-        membersIdList: membersID.concat(mainUser?.dataValues.id),
-        membersNameList: membersNames.concat(mainUser?.dataValues.name),
+        users: [],
       });
 
       // Create chat member entries
-      if (typeof args.memberId === "string") {
+      if (typeof args.memberID === "string") {
         await ChatMember.create({
           chatId: chat.dataValues.id,
           userId: ctx.userID,
         });
         await ChatMember.create({
           chatId: chat.dataValues.id,
-          userId: args.memberId,
+          userId: args.memberID,
         });
       } else {
         // TODO: Add group chat reference
       }
       return {
         id: chat.dataValues.id,
-        membersID,
-        membersNames,
+
         lastMsg: "",
         lastMsgTime: "",
       };

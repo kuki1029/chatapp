@@ -24,6 +24,9 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    avatar: {
+      type: DataTypes.BLOB("long"),
+    },
   },
   {
     sequelize,

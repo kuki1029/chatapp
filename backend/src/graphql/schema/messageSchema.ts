@@ -2,27 +2,18 @@ import { gql } from "graphql-tag";
 
 // TODO: check type of time if it works with everything
 export const messageTypeDefs = gql`
-  type ChatMessage {
-    id: ID!
-    type: MessageTypes!
-    content: String!
-    sender: ID!
-    time: String!
-  }
-
   type Message {
     id: ID!
     type: MessageTypes!
     content: String!
-    time: String!
-    senderId: ID!
+    createdAt: String!
+    senderID: ID!
   }
 
   input MessageInput {
     type: MessageTypes!
     content: String!
-    time: String!
-    chatId: String!
+    chatID: String!
   }
 
   enum MessageTypes {
@@ -30,20 +21,27 @@ export const messageTypeDefs = gql`
     ATTACHMENT
   }
 
+  type ChatUserInfo {
+    id: ID!
+    name: String
+    avatar: String
+  }
+
   type Chat {
     id: ID!
-    membersID: [ID!]!
-    membersNames: [String!]!
+    users: [ChatUserInfo!]!
+    lastMsg: String
+    lastMsgTime: String
   }
 
   type Query {
     userChats: [Chat!]!
-    chatMessages(chatId: String): [Message!]!
+    chatMessages(chatID: String): [Message!]!
   }
 
   type Mutation {
     addMessage(msg: MessageInput!): Message!
-    createChat(memberId: ID!): Chat!
+    createChat(memberID: ID!): Chat!
     createChatWithEmail(email: String): Chat
   }
 `;

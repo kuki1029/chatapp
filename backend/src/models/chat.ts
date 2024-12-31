@@ -12,14 +12,6 @@ Chat.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    membersIdList: {
-      type: DataTypes.ARRAY(DataTypes.INTEGER),
-      allowNull: false,
-    },
-    membersNameList: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false,
-    },
   },
   {
     sequelize,

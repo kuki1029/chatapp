@@ -38,7 +38,7 @@ const start = async () => {
     cors(corsOptions),
     cookieParser(),
     express.json(),
-    // TODO: Ideally auth middleware doesnt go to login stuff if not logged in
+    // TODO: Ideally auth middleware go to login stuff if not logged in
     expressMiddleware(server, {
       context: async ({ res, req }): Promise<MyContext> => {
         const token = req.cookies.token;

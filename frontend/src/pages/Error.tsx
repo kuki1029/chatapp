@@ -8,7 +8,7 @@ export const Error = () => {
           <Text
             size="xl"
             fw={900}
-            variant="gradient"
+            variant="gradient" //TODO: make gradient work with dark mode
             gradient={{ from: 'rgba(0, 0, 0, 1)', to: 'rgba(170, 0, 255, 1)', deg: 0 }}
           >
             Unfortunately the backend is currently shut down to save costs. Please reach out if
