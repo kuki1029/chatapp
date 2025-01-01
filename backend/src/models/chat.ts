@@ -1,9 +1,17 @@
 import { Model, DataTypes } from "sequelize";
 import db from "../utils/db";
+import { User } from "./models";
 
 const sequelize = db.sequelize;
 
-export class Chat extends Model {}
+// TODO: Think about adding types here
+export class Chat extends Model {
+  public addMember!: (user: User | number, options?: any) => Promise<void>;
+  public addMembers!: (
+    users: (User | number)[],
+    options?: any
+  ) => Promise<void>;
+}
 
 Chat.init(
   {

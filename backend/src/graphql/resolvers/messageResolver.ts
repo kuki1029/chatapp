@@ -108,94 +108,99 @@ export const messageResolvers = {
     },
     createChat: async (
       _: unknown,
-      args: { memberID: string },
-      ctx: MyContext
-    ) => {
-      if (!ctx.userID) {
-        return {}; //TODO: Remove with auth middleware
-      }
-      const membersID = [...args.memberID];
-
-      const users = await User.findAll({
-        where: {
-          id: {
-            [Op.in]: membersID, // Use Sequelize's Op.in operator
-          },
-        },
-      });
-      const membersNames = users.map((user) => user.dataValues.name);
-
-      const mainUser = await User.findByPk(parseInt(ctx.userID));
-
-      const chat = await Chat.create({
-        users: [],
-      });
-
-      // Create chat member entries
-      if (typeof args.memberID === "string") {
-        await ChatMember.create({
-          chatId: chat.dataValues.id,
-          userId: ctx.userID,
-        });
-        await ChatMember.create({
-          chatId: chat.dataValues.id,
-          userId: args.memberID,
-        });
-      } else {
-        // TODO: Add group chat reference
-      }
-      return {
-        id: chat.dataValues.id,
-
-        lastMsg: "",
-        lastMsgTime: "",
-      };
-    },
-    createChatWithEmail: async (
-      _: unknown,
-      args: { email: string },
+      { memberID }: { memberID: string },
       ctx: MyContext
     ) => {
       if (!ctx.userID) {
         return;
       }
-      const user = await User.findOne({ where: { email: args.email } });
-      if (!user) {
+      // Need to be able to rollback when doing multiple transactions
+      const transaction = await db.sequelize.transaction();
+      try {
+        const user = await User.findByPk(memberID, { transaction });
+        if (!user) {
+          return null;
+        }
+
+        const newChat = await Chat.create({}, { transaction });
+
+        // TODO: Lift this logic to the model definition of adding chatmembers
+        const members = [user.dataValues.id, parseInt(ctx.userID)];
+        const memberObj = members.map((member) => ({
+          chatId: newChat.dataValues.id,
+          userId: member,
+        }));
+
+        const newMember = await ChatMember.bulkCreate(memberObj, {
+          transaction,
+        });
+
+        await Promise.all(
+          newMember.map(async (member) => {
+            await newChat.addMember(member.dataValues.id, { transaction });
+          })
+        );
+
+        await transaction.commit();
+        return {
+          id: newChat.dataValues.id,
+          users: [user],
+          lastMsg: null,
+          lastMsgTime: null,
+        };
+      } catch (error) {
+        await transaction.rollback();
+        console.log(error);
         return null;
       }
-      const membersID = [user.dataValues.id];
-      const users = await User.findAll({
-        where: {
-          id: {
-            [Op.in]: membersID, // Use Sequelize's Op.in operator
-          },
-        },
-      });
+    },
+    createChatWithEmail: async (
+      _: unknown,
+      { email }: { email: string },
+      ctx: MyContext
+    ) => {
+      if (!ctx.userID) {
+        return;
+      }
+      // Need to be able to rollback when doing multiple transactions
+      const transaction = await db.sequelize.transaction();
+      try {
+        const user = await User.findOne({ where: { email }, transaction });
+        if (!user) {
+          return null;
+        }
 
-      const mainUser = await User.findByPk(parseInt(ctx.userID));
+        const newChat = await Chat.create({}, { transaction });
 
-      const membersNames = users.map((user) => user.dataValues.name);
-      const chat = await Chat.create({
-        membersIdList: membersID.concat(mainUser?.dataValues.id),
-        membersNameList: membersNames.concat(mainUser?.dataValues.name),
-      });
-      // Create chat member entries
-      await ChatMember.create({
-        chatId: chat.dataValues.id,
-        userId: ctx.userID,
-      });
-      await ChatMember.create({
-        chatId: chat.dataValues.id,
-        userId: user.dataValues.id,
-      });
+        // TODO: Lift this logic to the model definition of adding chatmembers
+        const members = [user.dataValues.id, parseInt(ctx.userID)];
+        const memberObj = members.map((member) => ({
+          chatId: newChat.dataValues.id,
+          userId: member,
+        }));
 
-      return {
-        id: chat.dataValues.id,
-        membersID,
-        membersNames,
-        lastMsg: "",
-        lastMsgTime: "",
-      };
+        const newMember = await ChatMember.bulkCreate(memberObj, {
+          transaction,
+        });
+
+        await Promise.all(
+          newMember.map(async (member) => {
+            await newChat.addMember(member.dataValues.id, { transaction });
+          })
+        );
+
+        await transaction.commit();
+        return {
+          id: newChat.dataValues.id,
+          users: [user],
+          lastMsg: null,
+          lastMsgTime: null,
+        };
+      } catch (error) {
+        await transaction.rollback();
+        console.log(error);
+        return null;
+      }
     },
   },
 };

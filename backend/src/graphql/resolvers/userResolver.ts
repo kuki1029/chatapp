@@ -13,9 +13,6 @@ interface MyContext {
 
 export const userResolvers = {
   Query: {
-    allUsers: async () => {
-      return []; // TODO: Remove this but using empty array for security
-    },
     isLoggedIn: async (_: unknown, __: unknown, ctx: MyContext) => {
       if (ctx.userID) {
         return true;
