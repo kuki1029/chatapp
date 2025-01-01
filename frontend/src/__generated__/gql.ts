@@ -20,10 +20,10 @@ const documents = {
     "\n  query LoggedInAndUserID {\n    userID\n    isLoggedIn\n  }\n": types.LoggedInAndUserIdDocument,
     "\n  mutation logout {\n    logout\n  }\n": types.LogoutDocument,
     "\n  query userID {\n    userID\n  }\n": types.UserIdDocument,
-    "\n  mutation CreateChatWithEmail($email: String) {\n    createChatWithEmail(email: $email) {\n      membersID\n      id\n    }\n  }\n": types.CreateChatWithEmailDocument,
-    "\n  mutation AddMessage($msg: MessageInput!) {\n    addMessage(msg: $msg) {\n      content\n      id\n      time\n      type\n    }\n  }\n": types.AddMessageDocument,
-    "\n  query UserChats {\n    userChats {\n      id\n      membersID\n      membersNames\n    }\n  }\n": types.UserChatsDocument,
-    "\n  query ChatMessages($chatId: String) {\n    chatMessages(chatId: $chatId) {\n      id\n      content\n      time\n      type\n      senderId\n    }\n  }\n": types.ChatMessagesDocument,
+    "\n  mutation CreateChatWithEmail($email: String) {\n    createChatWithEmail(email: $email) {\n      id\n      users {\n        id\n        name\n      }\n      lastMsg\n      lastMsgTime\n    }\n  }\n": types.CreateChatWithEmailDocument,
+    "\n  mutation AddMessage($msg: MessageInput!) {\n    addMessage(msg: $msg) {\n      content\n      id\n      type\n    }\n  }\n": types.AddMessageDocument,
+    "\n  query UserChats {\n    userChats {\n      id\n      users {\n        id\n        name\n        avatar\n      }\n      lastMsg\n      lastMsgTime\n    }\n  }\n": types.UserChatsDocument,
+    "\n  query ChatMessages($chatID: String) {\n    chatMessages(chatID: $chatID) {\n      id\n      type\n      content\n      createdAt\n      senderID\n    }\n    currentChatInfo(chatID: $chatID) {\n      id\n      name\n      avatar\n    }\n  }\n": types.ChatMessagesDocument,
 };
 
 /**
@@ -67,19 +67,19 @@ export function gql(source: "\n  query userID {\n    userID\n  }\n"): (typeof do
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  mutation CreateChatWithEmail($email: String) {\n    createChatWithEmail(email: $email) {\n      membersID\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreateChatWithEmail($email: String) {\n    createChatWithEmail(email: $email) {\n      membersID\n      id\n    }\n  }\n"];
+export function gql(source: "\n  mutation CreateChatWithEmail($email: String) {\n    createChatWithEmail(email: $email) {\n      id\n      users {\n        id\n        name\n      }\n      lastMsg\n      lastMsgTime\n    }\n  }\n"): (typeof documents)["\n  mutation CreateChatWithEmail($email: String) {\n    createChatWithEmail(email: $email) {\n      id\n      users {\n        id\n        name\n      }\n      lastMsg\n      lastMsgTime\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  mutation AddMessage($msg: MessageInput!) {\n    addMessage(msg: $msg) {\n      content\n      id\n      time\n      type\n    }\n  }\n"): (typeof documents)["\n  mutation AddMessage($msg: MessageInput!) {\n    addMessage(msg: $msg) {\n      content\n      id\n      time\n      type\n    }\n  }\n"];
+export function gql(source: "\n  mutation AddMessage($msg: MessageInput!) {\n    addMessage(msg: $msg) {\n      content\n      id\n      type\n    }\n  }\n"): (typeof documents)["\n  mutation AddMessage($msg: MessageInput!) {\n    addMessage(msg: $msg) {\n      content\n      id\n      type\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  query UserChats {\n    userChats {\n      id\n      membersID\n      membersNames\n    }\n  }\n"): (typeof documents)["\n  query UserChats {\n    userChats {\n      id\n      membersID\n      membersNames\n    }\n  }\n"];
+export function gql(source: "\n  query UserChats {\n    userChats {\n      id\n      users {\n        id\n        name\n        avatar\n      }\n      lastMsg\n      lastMsgTime\n    }\n  }\n"): (typeof documents)["\n  query UserChats {\n    userChats {\n      id\n      users {\n        id\n        name\n        avatar\n      }\n      lastMsg\n      lastMsgTime\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  query ChatMessages($chatId: String) {\n    chatMessages(chatId: $chatId) {\n      id\n      content\n      time\n      type\n      senderId\n    }\n  }\n"): (typeof documents)["\n  query ChatMessages($chatId: String) {\n    chatMessages(chatId: $chatId) {\n      id\n      content\n      time\n      type\n      senderId\n    }\n  }\n"];
+export function gql(source: "\n  query ChatMessages($chatID: String) {\n    chatMessages(chatID: $chatID) {\n      id\n      type\n      content\n      createdAt\n      senderID\n    }\n    currentChatInfo(chatID: $chatID) {\n      id\n      name\n      avatar\n    }\n  }\n"): (typeof documents)["\n  query ChatMessages($chatID: String) {\n    chatMessages(chatID: $chatID) {\n      id\n      type\n      content\n      createdAt\n      senderID\n    }\n    currentChatInfo(chatID: $chatID) {\n      id\n      name\n      avatar\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

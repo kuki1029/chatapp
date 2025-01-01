@@ -1,4 +1,4 @@
-import { User } from "../../models/user"; // TODO: Update imports here
+import { User } from "../../models/models";
 import { UserDTO } from "../../../types";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";

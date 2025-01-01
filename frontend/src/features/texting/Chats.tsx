@@ -24,7 +24,7 @@ interface Iprops {
 export const Chats = ({ setChatID }: Iprops) => {
   const [currentView, setCurrentView] = useState<ChatsDisplay>(ChatsDisplay.CHATS)
   const colors = useColorScheme()
-  console.log(colors.primary)
+
   return (
     <Paper
       h="90%"

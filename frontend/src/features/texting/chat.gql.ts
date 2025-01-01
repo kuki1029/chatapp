@@ -3,8 +3,13 @@ import { gql } from '@apollo/client'
 export const CREATE_CHAT_WITH_EMAIL = gql`
   mutation CreateChatWithEmail($email: String) {
     createChatWithEmail(email: $email) {
-      membersID
       id
+      users {
+        id
+        name
+      }
+      lastMsg
+      lastMsgTime
     }
   }
 `
@@ -14,7 +19,6 @@ export const ADD_MESSAGE = gql`
     addMessage(msg: $msg) {
       content
       id
-      time
       type
     }
   }
@@ -24,20 +28,30 @@ export const GET_USER_CHATS = gql`
   query UserChats {
     userChats {
       id
-      membersID
-      membersNames
+      users {
+        id
+        name
+        avatar
+      }
+      lastMsg
+      lastMsgTime
     }
   }
 `
 
-export const GET_CHAT_MESSAGES = gql`
-  query ChatMessages($chatId: String) {
-    chatMessages(chatId: $chatId) {
+export const GET_CHAT_MESSAGES_AND_USERS = gql`
+  query ChatMessages($chatID: String) {
+    chatMessages(chatID: $chatID) {
       id
-      content
-      time
       type
-      senderId
+      content
+      createdAt
+      senderID
+    }
+    currentChatInfo(chatID: $chatID) {
+      id
+      name
+      avatar
     }
   }
 `

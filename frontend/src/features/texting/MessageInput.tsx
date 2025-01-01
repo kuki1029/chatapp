@@ -27,7 +27,7 @@ export const MessageInput = ({ chatID }: Iprops) => {
       placeholder="Write a message..."
       rightSectionWidth={42}
       leftSection={
-        <ActionIcon size={24} radius="md" color={color.buttons} variant="filled">
+        <ActionIcon size={28} radius="md" color={color.buttons} variant="filled">
           <IconPlus size={18} stroke={1.5} />
         </ActionIcon>
       }

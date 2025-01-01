@@ -28,7 +28,7 @@ export const messageResolvers = {
     userChats: async (_: unknown, __: unknown, ctx: MyContext) => {
       const sequelize = db.sequelize;
       if (!ctx.userID) {
-        return []; // TODO: Add auth middleware so this is never null
+        return []; // TODO: Add auth middleware so this is never null when websockets
       }
       const chatsWithAssociations = await Chat.findAll({
         include: [
@@ -51,7 +51,7 @@ export const messageResolvers = {
           id: {
             [Op.in]: sequelize.literal(`(
               SELECT "chatId" FROM "members" WHERE "userId" = ${ctx.userID}
-            )`), // No clear simple way to do this directly in sequelize
+            )`), // No clear simple way to do this directly in sequelize to only get chats with this userID
           },
         },
       });
@@ -78,7 +78,7 @@ export const messageResolvers = {
         };
       });
     },
-    chatMessages: async (_: unknown, args: { chatID: String }) => {
+    chatMessages: async (_: unknown, args: { chatID: string }) => {
       const messages = await ChatMessage.findAll({
         where: { chatId: args.chatID },
       });
@@ -88,6 +88,32 @@ export const messageResolvers = {
           senderID: msg.dataValues.userId,
         };
       });
+    },
+    currentChatInfo: async (
+      _: unknown,
+      { chatID }: { chatID: string },
+      ctx: MyContext
+    ) => {
+      if (!ctx.userID) {
+        return []; //TODO: Remove when auth middleware added
+      }
+      const chat = await Chat.findByPk(parseInt(chatID), {
+        include: [
+          {
+            model: ChatMember,
+            include: [
+              {
+                model: User,
+              },
+            ],
+          },
+        ],
+      });
+      return chat?.dataValues.members
+        .filter(
+          (member: any) => member.dataValues.user.dataValues.id != ctx.userID
+        )
+        .map((member: any) => member.dataValues.user.dataValues);
     },
   },
   Mutation: {
@@ -114,34 +140,16 @@ export const messageResolvers = {
       if (!ctx.userID) {
         return;
       }
-      // Need to be able to rollback when doing multiple transactions
-      const transaction = await db.sequelize.transaction();
       try {
-        const user = await User.findByPk(memberID, { transaction });
+        const user = await User.findByPk(memberID);
         if (!user) {
           return null;
         }
+        const newChat = await Chat.create();
 
-        const newChat = await Chat.create({}, { transaction });
-
-        // TODO: Lift this logic to the model definition of adding chatmembers
         const members = [user.dataValues.id, parseInt(ctx.userID)];
-        const memberObj = members.map((member) => ({
-          chatId: newChat.dataValues.id,
-          userId: member,
-        }));
+        await newChat.addUsers(members, newChat.dataValues.id);
 
-        const newMember = await ChatMember.bulkCreate(memberObj, {
-          transaction,
-        });
-
-        await Promise.all(
-          newMember.map(async (member) => {
-            await newChat.addMember(member.dataValues.id, { transaction });
-          })
-        );
-
-        await transaction.commit();
         return {
           id: newChat.dataValues.id,
           users: [user],
@@ -149,7 +157,6 @@ export const messageResolvers = {
           lastMsgTime: null,
         };
       } catch (error) {
-        await transaction.rollback();
         console.log(error);
         return null;
       }
@@ -162,34 +169,17 @@ export const messageResolvers = {
       if (!ctx.userID) {
         return;
       }
-      // Need to be able to rollback when doing multiple transactions
-      const transaction = await db.sequelize.transaction();
+      //TODO: Add error handling middleware
       try {
-        const user = await User.findOne({ where: { email }, transaction });
+        const user = await User.findOne({ where: { email } });
         if (!user) {
           return null;
         }
+        const newChat = await Chat.create();
 
-        const newChat = await Chat.create({}, { transaction });
-
-        // TODO: Lift this logic to the model definition of adding chatmembers
         const members = [user.dataValues.id, parseInt(ctx.userID)];
-        const memberObj = members.map((member) => ({
-          chatId: newChat.dataValues.id,
-          userId: member,
-        }));
+        await newChat.addUsers(members, newChat.dataValues.id);
 
-        const newMember = await ChatMember.bulkCreate(memberObj, {
-          transaction,
-        });
-
-        await Promise.all(
-          newMember.map(async (member) => {
-            await newChat.addMember(member.dataValues.id, { transaction });
-          })
-        );
-
-        await transaction.commit();
         return {
           id: newChat.dataValues.id,
           users: [user],
@@ -197,7 +187,6 @@ export const messageResolvers = {
           lastMsgTime: null,
         };
       } catch (error) {
-        await transaction.rollback();
         console.log(error);
         return null;
       }

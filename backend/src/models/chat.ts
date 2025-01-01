@@ -1,16 +1,28 @@
 import { Model, DataTypes } from "sequelize";
 import db from "../utils/db";
-import { User } from "./models";
+import { User, ChatMember } from "./models";
 
 const sequelize = db.sequelize;
 
-// TODO: Think about adding types here
 export class Chat extends Model {
   public addMember!: (user: User | number, options?: any) => Promise<void>;
   public addMembers!: (
     users: (User | number)[],
     options?: any
   ) => Promise<void>;
+
+  public async addUsers(userID: number[], chatID: number): Promise<void> {
+    try {
+      const memberObj = userID.map((member) => ({
+        chatId: chatID,
+        userId: member,
+      }));
+
+      await ChatMember.bulkCreate(memberObj);
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 Chat.init(

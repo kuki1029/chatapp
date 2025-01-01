@@ -1,4 +1,4 @@
-import { useMantineTheme, ActionIcon } from '@mantine/core'
+import { ActionIcon } from '@mantine/core'
 import { IconArrowRight } from '@tabler/icons-react'
 import { MessageTypes } from '../../__generated__/graphql'
 import { useMutation } from '@apollo/client'
@@ -9,6 +9,7 @@ import {
   ChatMessagesDocument,
 } from '../../__generated__/graphql'
 import { useColorScheme } from '../../utility/useColorScheme'
+import { useWindowEvent } from '@mantine/hooks'
 
 interface Iprops {
   chatID: string
@@ -33,7 +34,6 @@ export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
           __typename: 'Message',
           content: msg,
           id: 'temp-id',
-          time: '1733130045000', //TODO: Fix time
           type: MessageTypes.Text,
         },
       },
@@ -41,21 +41,28 @@ export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
     }
   )
 
+  const sendMessage = async () => {
+    await addMessage({
+      variables: {
+        msg: { type: MessageTypes.Text, content: msg, chatID },
+      },
+    })
+    setMsg('')
+  }
+
+  useWindowEvent('keypress', (e) => {
+    if (e.key === 'Enter') {
+      void sendMessage()
+    }
+  })
+
   return (
     <ActionIcon
-      size={24}
+      size={28}
       radius="md"
       color={color.buttons}
       variant="filled"
-      onClick={async () => {
-        const time = '1733130045000'
-        await addMessage({
-          variables: {
-            msg: { type: MessageTypes.Text, content: msg, time, chatId: chatID },
-          },
-        })
-        setMsg('')
-      }}
+      onClick={sendMessage}
       loading={loading}
     >
       <IconArrowRight size={18} stroke={1.5} />

@@ -55,7 +55,7 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
       <Modal opened={opened} onClose={close} withCloseButton={false}>
         There was an error. Please refresh the page.
       </Modal>
-      <Grid h="100%" grow overflow="hidden" pl={'2%'} pr={'2%'} style={{ zIndex: 999 }}>
+      <Grid h="100%" overflow="hidden" pl={'2%'} pr={'2%'} style={{ zIndex: 999 }}>
         <Grid.Col span={3}>
           <Center {...centerStyle}>
             <Chats setChatID={setChatID} />

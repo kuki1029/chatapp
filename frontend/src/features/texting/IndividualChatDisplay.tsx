@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client'
-import { ScrollArea, LoadingOverlay, NavLink, Avatar } from '@mantine/core'
+import { ScrollArea, LoadingOverlay, NavLink, Avatar, Text, Box } from '@mantine/core'
 import {
   UserChatsQuery,
   UserChatsQueryVariables,
@@ -7,6 +7,7 @@ import {
 } from '../../__generated__/graphql'
 import { useState } from 'react'
 import { upperFirst } from '@mantine/hooks'
+import './chat.css'
 
 interface Iprops {
   setChatID: React.Dispatch<React.SetStateAction<string | undefined>>
@@ -20,26 +21,41 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
       open()
     },
   })
-
   return (
-    <ScrollArea miw={'100%'} scrollHideDelay={0}>
+    <ScrollArea miw={'100%'} scrollbars="y" scrollHideDelay={0}>
       {data ? (
-        data.userChats.map((chat, index) => (
-          <NavLink
-            key={chat.id}
-            label={upperFirst(chat.membersNames.toString())}
-            description={`Last Message Here. Time. `}
-            active={index === active}
-            onClick={() => {
-              setActive(index)
-              setChatID(chat.id)
-            }}
-            variant="filled"
-            autoContrast
-            color="dark"
-            leftSection={<Avatar>KV</Avatar>}
-          />
-        ))
+        data.userChats.map((chat, index) => {
+          return (
+            <NavLink
+              key={chat.id}
+              styles={{
+                label: { backgroundColor: 'red', textOverflow: 'ellipsis' },
+                root: {},
+              }}
+              label={
+                <Box w={'100%'}>
+                  <Text truncate="end" maw="100%">
+                    {chat.users.map((user) => upperFirst(user.name)).join(', ')}
+                  </Text>
+                </Box>
+              }
+              description={
+                <Text c="dimmed" size="xs" truncate="end">
+                  {chat.lastMsg}
+                </Text>
+              }
+              active={index === active}
+              onClick={() => {
+                setActive(index)
+                setChatID(chat.id)
+              }}
+              variant="filled"
+              autoContrast
+              color="dark"
+              leftSection={<Avatar>{chat.users[0].avatar}</Avatar>}
+            />
+          )
+        })
       ) : (
         <LoadingOverlay />
       )}

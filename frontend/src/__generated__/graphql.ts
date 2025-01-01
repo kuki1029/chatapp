@@ -19,32 +19,30 @@ export type Scalars = {
 export type Chat = {
   __typename?: 'Chat';
   id: Scalars['ID']['output'];
-  membersID: Array<Scalars['ID']['output']>;
-  membersNames: Array<Scalars['String']['output']>;
+  lastMsg?: Maybe<Scalars['String']['output']>;
+  lastMsgTime?: Maybe<Scalars['String']['output']>;
+  users: Array<ChatUserInfo>;
 };
 
-export type ChatMessage = {
-  __typename?: 'ChatMessage';
-  content: Scalars['String']['output'];
+export type ChatUserInfo = {
+  __typename?: 'ChatUserInfo';
+  avatar?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  sender: Scalars['ID']['output'];
-  time: Scalars['String']['output'];
-  type: MessageTypes;
+  name: Scalars['String']['output'];
 };
 
 export type Message = {
   __typename?: 'Message';
   content: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  senderId: Scalars['ID']['output'];
-  time: Scalars['String']['output'];
+  senderID: Scalars['ID']['output'];
   type: MessageTypes;
 };
 
 export type MessageInput = {
-  chatId: Scalars['String']['input'];
+  chatID: Scalars['String']['input'];
   content: Scalars['String']['input'];
-  time: Scalars['String']['input'];
   type: MessageTypes;
 };
 
@@ -56,7 +54,7 @@ export enum MessageTypes {
 export type Mutation = {
   __typename?: 'Mutation';
   addMessage: Message;
-  createChat: Chat;
+  createChat?: Maybe<Chat>;
   createChatWithEmail?: Maybe<Chat>;
   login?: Maybe<UserDto>;
   logout?: Maybe<Scalars['Boolean']['output']>;
@@ -70,7 +68,7 @@ export type MutationAddMessageArgs = {
 
 
 export type MutationCreateChatArgs = {
-  memberId: Scalars['ID']['input'];
+  memberID: Scalars['ID']['input'];
 };
 
 
@@ -93,8 +91,8 @@ export type MutationSignupArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  allUsers: Array<User>;
   chatMessages: Array<Message>;
+  currentChatInfo: Array<ChatUserInfo>;
   isLoggedIn: Scalars['Boolean']['output'];
   userChats: Array<Chat>;
   userID?: Maybe<Scalars['String']['output']>;
@@ -102,7 +100,12 @@ export type Query = {
 
 
 export type QueryChatMessagesArgs = {
-  chatId?: InputMaybe<Scalars['String']['input']>;
+  chatID?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryCurrentChatInfoArgs = {
+  chatID?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
@@ -162,26 +165,26 @@ export type CreateChatWithEmailMutationVariables = Exact<{
 }>;
 
 
-export type CreateChatWithEmailMutation = { __typename?: 'Mutation', createChatWithEmail?: { __typename?: 'Chat', membersID: Array<string>, id: string } | null };
+export type CreateChatWithEmailMutation = { __typename?: 'Mutation', createChatWithEmail?: { __typename?: 'Chat', id: string, lastMsg?: string | null, lastMsgTime?: string | null, users: Array<{ __typename?: 'ChatUserInfo', id: string, name: string }> } | null };
 
 export type AddMessageMutationVariables = Exact<{
   msg: MessageInput;
 }>;
 
 
-export type AddMessageMutation = { __typename?: 'Mutation', addMessage: { __typename?: 'Message', content: string, id: string, time: string, type: MessageTypes } };
+export type AddMessageMutation = { __typename?: 'Mutation', addMessage: { __typename?: 'Message', content: string, id: string, type: MessageTypes } };
 
 export type UserChatsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UserChatsQuery = { __typename?: 'Query', userChats: Array<{ __typename?: 'Chat', id: string, membersID: Array<string>, membersNames: Array<string> }> };
+export type UserChatsQuery = { __typename?: 'Query', userChats: Array<{ __typename?: 'Chat', id: string, lastMsg?: string | null, lastMsgTime?: string | null, users: Array<{ __typename?: 'ChatUserInfo', id: string, name: string, avatar?: string | null }> }> };
 
 export type ChatMessagesQueryVariables = Exact<{
-  chatId?: InputMaybe<Scalars['String']['input']>;
+  chatID?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type ChatMessagesQuery = { __typename?: 'Query', chatMessages: Array<{ __typename?: 'Message', id: string, content: string, time: string, type: MessageTypes, senderId: string }> };
+export type ChatMessagesQuery = { __typename?: 'Query', chatMessages: Array<{ __typename?: 'Message', id: string, type: MessageTypes, content: string, createdAt: string, senderID: string }>, currentChatInfo: Array<{ __typename?: 'ChatUserInfo', id: string, name: string, avatar?: string | null }> };
 
 
 export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
@@ -190,7 +193,7 @@ export const IsLoggedInDocument = {"kind":"Document","definitions":[{"kind":"Ope
 export const LoggedInAndUserIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"LoggedInAndUserID"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userID"}},{"kind":"Field","name":{"kind":"Name","value":"isLoggedIn"}}]}}]} as unknown as DocumentNode<LoggedInAndUserIdQuery, LoggedInAndUserIdQueryVariables>;
 export const LogoutDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"logout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logout"}}]}}]} as unknown as DocumentNode<LogoutMutation, LogoutMutationVariables>;
 export const UserIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"userID"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userID"}}]}}]} as unknown as DocumentNode<UserIdQuery, UserIdQueryVariables>;
-export const CreateChatWithEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateChatWithEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createChatWithEmail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"membersID"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateChatWithEmailMutation, CreateChatWithEmailMutationVariables>;
-export const AddMessageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddMessage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"msg"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"MessageInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addMessage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"msg"},"value":{"kind":"Variable","name":{"kind":"Name","value":"msg"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<AddMessageMutation, AddMessageMutationVariables>;
-export const UserChatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"UserChats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userChats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"membersID"}},{"kind":"Field","name":{"kind":"Name","value":"membersNames"}}]}}]}}]} as unknown as DocumentNode<UserChatsQuery, UserChatsQueryVariables>;
-export const ChatMessagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ChatMessages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"chatId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chatMessages"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"chatId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"chatId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"senderId"}}]}}]}}]} as unknown as DocumentNode<ChatMessagesQuery, ChatMessagesQueryVariables>;
+export const CreateChatWithEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateChatWithEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createChatWithEmail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"lastMsg"}},{"kind":"Field","name":{"kind":"Name","value":"lastMsgTime"}}]}}]}}]} as unknown as DocumentNode<CreateChatWithEmailMutation, CreateChatWithEmailMutationVariables>;
+export const AddMessageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddMessage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"msg"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"MessageInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addMessage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"msg"},"value":{"kind":"Variable","name":{"kind":"Name","value":"msg"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<AddMessageMutation, AddMessageMutationVariables>;
+export const UserChatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"UserChats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userChats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"lastMsg"}},{"kind":"Field","name":{"kind":"Name","value":"lastMsgTime"}}]}}]}}]} as unknown as DocumentNode<UserChatsQuery, UserChatsQueryVariables>;
+export const ChatMessagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ChatMessages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"chatID"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chatMessages"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"chatID"},"value":{"kind":"Variable","name":{"kind":"Name","value":"chatID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"senderID"}}]}},{"kind":"Field","name":{"kind":"Name","value":"currentChatInfo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"chatID"},"value":{"kind":"Variable","name":{"kind":"Name","value":"chatID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]} as unknown as DocumentNode<ChatMessagesQuery, ChatMessagesQueryVariables>;

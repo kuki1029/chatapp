@@ -1,6 +1,5 @@
 import { gql } from "graphql-tag";
 
-// TODO: check type of time if it works with everything
 export const messageTypeDefs = gql`
   type Message {
     id: ID!
@@ -23,7 +22,7 @@ export const messageTypeDefs = gql`
 
   type ChatUserInfo {
     id: ID!
-    name: String
+    name: String!
     avatar: String
   }
 
@@ -37,11 +36,12 @@ export const messageTypeDefs = gql`
   type Query {
     userChats: [Chat!]!
     chatMessages(chatID: String): [Message!]!
+    currentChatInfo(chatID: String): [ChatUserInfo!]!
   }
 
   type Mutation {
     addMessage(msg: MessageInput!): Message!
-    createChat(memberID: ID!): Chat!
+    createChat(memberID: ID!): Chat
     createChatWithEmail(email: String): Chat
   }
 `;

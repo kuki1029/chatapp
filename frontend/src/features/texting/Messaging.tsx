@@ -1,4 +1,4 @@
-import { Paper, Stack, Text, useComputedColorScheme } from '@mantine/core'
+import { Paper, Stack, Text } from '@mantine/core'
 import { useEffect } from 'react'
 import { useLazyQuery } from '@apollo/client'
 import {
@@ -28,10 +28,11 @@ export const Messaging = ({ chatID }: Iprops) => {
     ChatMessagesDocument
   )
   const chatMessages = data?.chatMessages
+  const chatInfo = data?.currentChatInfo
 
   useEffect(() => {
     if (chatID) {
-      void getMessages({ variables: { chatId: chatID } })
+      void getMessages({ variables: { chatID } })
     }
   }, [chatID, getMessages])
 
@@ -45,14 +46,15 @@ export const Messaging = ({ chatID }: Iprops) => {
       style={{ zIndex: 9999, background: colors.bgColor }}
     >
       <Stack {...stackStyle}>
-        <CurrentChatProfile />
-        {chatID && chatMessages ? (
+        {chatID && chatMessages && chatInfo ? (
           <>
+            <CurrentChatProfile chatUsers={chatInfo} status="now" />
             <DisplayMessages messages={chatMessages} />
             <MessageInput chatID={chatID} />
           </>
         ) : (
           <Text h={'50%'}>Choose a chat!</Text>
+          // TODO: Use a diff element above
         )}
       </Stack>
     </Paper>

@@ -2,10 +2,8 @@ import express, { Response, Request } from "express";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import database from "./src/utils/db";
-import { userTypeDefs } from "./src/graphql/schema/userSchema";
-import { userResolvers } from "./src/graphql/resolvers/userResolver";
-import { messageResolvers } from "./src/graphql/resolvers/messageResolver";
-import { messageTypeDefs } from "./src/graphql/schema/messageSchema"; //TODO: combine imports into one file for each
+import { resolvers } from "./src/graphql/resolvers/resolvers";
+import { typeDefs } from "./src/graphql/schema/schemas";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
@@ -26,8 +24,8 @@ const start = async () => {
   const app = express() as any;
 
   const server = new ApolloServer<MyContext>({
-    typeDefs: [userTypeDefs, messageTypeDefs],
-    resolvers: [userResolvers, messageResolvers],
+    typeDefs,
+    resolvers,
   });
 
   await server.start();
