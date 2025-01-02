@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { ActionIcon } from '@mantine/core'
 import { IconArrowRight } from '@tabler/icons-react'
-import { MessageTypes } from '../../__generated__/graphql'
+import { MessageTypes, UserChatsDocument } from '../../__generated__/graphql'
 import { useMutation } from '@apollo/client'
 import {
   AddMessageMutation,
@@ -17,7 +21,6 @@ interface Iprops {
   setMsg: React.Dispatch<React.SetStateAction<string>>
 }
 
-//TODO: Either disable button or remove when chat not selected
 export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
   const color = useColorScheme()
   const [addMessage, { loading }] = useMutation<AddMessageMutation, AddMessageMutationVariables>(
@@ -37,7 +40,7 @@ export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
           type: MessageTypes.Text,
         },
       },
-      refetchQueries: [ChatMessagesDocument],
+      refetchQueries: [ChatMessagesDocument, UserChatsDocument],
     }
   )
 

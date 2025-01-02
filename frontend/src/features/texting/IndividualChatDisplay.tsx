@@ -21,6 +21,7 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
       open()
     },
   })
+
   return (
     <ScrollArea miw={'100%'} scrollbars="y" scrollHideDelay={0}>
       {data ? (

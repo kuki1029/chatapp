@@ -8,10 +8,10 @@ import { useNavigate } from 'react-router-dom'
 interface Iprops {
   refetchLoginStatus: () => void
 }
-// TODO: Add error when wrong password
+
 export const Auth = ({ refetchLoginStatus }: Iprops) => {
   const navigate = useNavigate()
-  const [login, { loading, error }] = useMutation<LoginMutation, LoginMutationVariables>(
+  const [login, { loading, error, data }] = useMutation<LoginMutation, LoginMutationVariables>(
     LoginDocument,
     {
       onError: (error) => {
@@ -21,6 +21,8 @@ export const Auth = ({ refetchLoginStatus }: Iprops) => {
         if (data.login) {
           refetchLoginStatus()
           navigate('/')
+        } else {
+          navigate('/login')
         }
       },
     }
@@ -43,7 +45,7 @@ export const Auth = ({ refetchLoginStatus }: Iprops) => {
           </Group>
           <Divider label="Or continue with email" labelPosition="center" my="lg" />
           {/* Login/Signup Form */}
-          <AuthForm login={login} loading={loading} />
+          <AuthForm login={login} loading={loading} success={!!data?.login} />
         </Paper>
       </Container>
     </Center>

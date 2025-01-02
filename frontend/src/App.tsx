@@ -9,8 +9,11 @@ import '@mantine/core/styles.css'
 import { useQuery } from '@apollo/client'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { LoggedInAndUserIdQuery, LoggedInAndUserIdQueryVariables } from './__generated__/graphql.ts'
-import { LOGGED_IN_AND_USERID } from './features/auth/auth.gql.ts'
+import {
+  LoggedInAndUserIdQuery,
+  LoggedInAndUserIdQueryVariables,
+  LoggedInAndUserIdDocument,
+} from './__generated__/graphql.ts'
 import { UserIdContext } from './features/auth/UserIDContext.tsx'
 
 function App() {
@@ -22,8 +25,9 @@ function App() {
     refetch: refetchLoginStatus,
     error,
     loading,
-  } = useQuery<LoggedInAndUserIdQuery, LoggedInAndUserIdQueryVariables>(LOGGED_IN_AND_USERID, {
+  } = useQuery<LoggedInAndUserIdQuery, LoggedInAndUserIdQueryVariables>(LoggedInAndUserIdDocument, {
     fetchPolicy: 'network-only',
+    pollInterval: 86400000,
     notifyOnNetworkStatusChange: true, // Need this so it uses onComplete on refetch
     onCompleted: (data) => {
       setUserID(data.userID)
@@ -32,7 +36,6 @@ function App() {
       }
     },
   })
-  //TODO: Add polling to above
 
   const isLoggedIn = data?.isLoggedIn
 

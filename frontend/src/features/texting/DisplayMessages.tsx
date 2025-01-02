@@ -20,10 +20,11 @@ export const DisplayMessages = ({ messages }: Iprops) => {
   })
 
   return (
-    <ScrollArea h="100%" miw={'100%'} viewportRef={scrollView}>
-      <Flex gap="7" h={'100%'} justify="flex-end" align="flex-end" direction="column" wrap="nowrap">
+    <ScrollArea offsetScrollbars miw={'100%'} viewportRef={scrollView}>
+      <Flex gap="7" justify="flex-end" align="flex-end" direction="column" wrap="nowrap">
         {messages.map((msg) => {
-          const date = new Date(parseInt(msg.createdAt)) //TODO: Research if better way to get this time or store in BE
+          // I could format this in backend but I want to give frontend freedom to change based on timezone
+          const date = new Date(parseInt(msg.createdAt))
           const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getFullYear()).slice(-2)}`
           return (
             <ChatBubble

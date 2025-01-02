@@ -1,4 +1,4 @@
-import { Paper, Stack, Title, Group, ActionIcon, useComputedColorScheme } from '@mantine/core'
+import { Paper, Stack, Title, Group, ActionIcon } from '@mantine/core'
 import { useState } from 'react'
 import { IconMailPlus, IconUserSearch, IconUserCircle, IconBrandLine } from '@tabler/icons-react'
 import { CreateNewChat } from './CreateNewChat'

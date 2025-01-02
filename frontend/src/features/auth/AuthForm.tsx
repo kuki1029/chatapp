@@ -8,9 +8,10 @@ import { Button } from '../../components/Button'
 interface Iprops {
   login: MutationFunction<LoginMutation, LoginMutationVariables>
   loading: boolean | undefined
+  success: boolean | undefined
 }
 
-export const AuthForm = ({ login, loading }: Iprops) => {
+export const AuthForm = ({ login, loading, success }: Iprops) => {
   const [type, toggle] = useToggle(['login', 'register'])
   const form = useForm({
     initialValues: {
@@ -28,7 +29,14 @@ export const AuthForm = ({ login, loading }: Iprops) => {
 
   const submitForm = async () => {
     await login({ variables: { email: form.values.email, password: form.values.password } })
+    if (!success) {
+      form.setErrors({
+        password: 'Incorrect email or password',
+        email: 'Incorrect email or password',
+      })
+    }
   }
+  console.log(form.errors)
 
   //  Login with email form
   return (
@@ -58,7 +66,7 @@ export const AuthForm = ({ login, loading }: Iprops) => {
           onChange={(event) => {
             form.setFieldValue('email', event.currentTarget.value)
           }}
-          error={form.errors.email && 'Invalid email'}
+          error={form.errors.email}
           radius="md"
         />
 
@@ -70,7 +78,7 @@ export const AuthForm = ({ login, loading }: Iprops) => {
           onChange={(event) => {
             form.setFieldValue('password', event.currentTarget.value)
           }}
-          error={form.errors.password && 'Password should include at least 6 characters'}
+          error={form.errors.password}
           radius="md"
         />
 
