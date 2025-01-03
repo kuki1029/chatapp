@@ -3,6 +3,12 @@ import { ChatBubble } from './ChatBubble'
 import { ChatMessagesQuery } from '../../__generated__/graphql'
 import { useContext, useEffect, useRef } from 'react'
 import { UserIdContext } from '../auth/UserIDContext'
+import { useSubscription } from '@apollo/client'
+import {
+  NewMessageDocument,
+  NewMessageSubscription,
+  NewMessageSubscriptionVariables,
+} from '../../__generated__/graphql'
 import './chat.css'
 
 interface Iprops {
@@ -10,6 +16,10 @@ interface Iprops {
 }
 
 export const DisplayMessages = ({ messages }: Iprops) => {
+  const { data, loading } = useSubscription<
+    NewMessageSubscription,
+    NewMessageSubscriptionVariables
+  >(NewMessageDocument, { variables: { chatId: '2' } })
   const userID = useContext(UserIdContext)
   const scrollView = useRef<HTMLDivElement>(null)
 
@@ -18,6 +28,8 @@ export const DisplayMessages = ({ messages }: Iprops) => {
       scrollView.current.scrollTo({ top: scrollView.current.scrollHeight })
     }
   })
+
+  console.log(data, loading)
 
   return (
     <ScrollArea offsetScrollbars miw={'100%'} viewportRef={scrollView}>

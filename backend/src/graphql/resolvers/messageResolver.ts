@@ -1,24 +1,10 @@
 import { Chat, ChatMember, User, ChatMessage } from "../../models/models";
 import { Op } from "sequelize";
 import db from "../../utils/db";
+import { MessageTypes, Message, SubTypes } from "../../../types";
+import { MyContext } from "../../..";
 
-export enum MessageTypes {
-  TEXT = "TEXT",
-  ATTACHMENT = "ATTACHMENT",
-}
-
-interface Message {
-  type: MessageTypes;
-  content: String;
-  chatID: String;
-}
-
-interface MyContext {
-  res: Response;
-  req: Request;
-  userID: string | null;
-}
-
+//TODO: Split up into query and mutation files
 export const messageResolvers = {
   MessageTypes: {
     TEXT: MessageTypes.TEXT,
@@ -122,10 +108,19 @@ export const messageResolvers = {
       { msg }: { msg: Message },
       ctx: MyContext
     ) => {
+      if (!ctx.userID) {
+        return {};
+      }
       const createdMsg = await ChatMessage.create({
         ...msg,
         chatId: msg.chatID,
         userId: ctx.userID,
+      });
+      ctx.pubsub.publish("NEW_MESSAGE", {
+        newMessage: {
+          ...createdMsg.dataValues,
+          senderID: ctx.userID,
+        },
       });
       return {
         ...createdMsg.dataValues,
@@ -190,6 +185,13 @@ export const messageResolvers = {
         console.log(error);
         return null;
       }
+    },
+  },
+  Subscription: {
+    newMessage: {
+      subscribe: (_: unknown, __: any, ctx: any) => {
+        return ctx.pubsub.asyncIterableIterator(SubTypes.NEW_MESSAGE);
+      },
     },
   },
 };

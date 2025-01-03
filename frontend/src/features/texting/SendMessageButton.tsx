@@ -27,7 +27,7 @@ export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
     AddMessageDocument,
     {
       onError: (error) => {
-        console.log(error) //TODO: Handle errors properly
+        console.log(error) //TODO: Handle errors properly with notifcation
       },
       // Assumes some shape of the object and updates cache instantly to provide
       // quick UI response. Apollo will update the object later after response comes from server

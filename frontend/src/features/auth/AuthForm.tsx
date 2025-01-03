@@ -36,7 +36,6 @@ export const AuthForm = ({ login, loading, success }: Iprops) => {
       })
     }
   }
-  console.log(form.errors)
 
   //  Login with email form
   return (

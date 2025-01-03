@@ -55,3 +55,15 @@ export const GET_CHAT_MESSAGES_AND_USERS = gql`
     }
   }
 `
+
+export const NEW_MESSAGE_SUB = gql`
+  subscription NewMessage($chatId: String) {
+    newMessage(chatID: $chatId) {
+      id
+      type
+      content
+      createdAt
+      senderID
+    }
+  }
+`

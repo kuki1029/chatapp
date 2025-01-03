@@ -44,4 +44,8 @@ export const messageTypeDefs = gql`
     createChat(memberID: ID!): Chat
     createChatWithEmail(email: String): Chat
   }
+
+  type Subscription {
+    newMessage(chatID: String): Message
+  }
 `;
