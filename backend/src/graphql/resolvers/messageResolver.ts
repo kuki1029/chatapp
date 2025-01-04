@@ -1,8 +1,9 @@
 import { Chat, ChatMember, User, ChatMessage } from "../../models/models";
 import { Op } from "sequelize";
 import db from "../../utils/db";
-import { MessageTypes, Message, SubTypes } from "../../../types";
+import { MessageTypes, Message, SubTypes, NewMessage } from "../../../types";
 import { MyContext } from "../../..";
+import { withFilter } from "graphql-subscriptions";
 
 //TODO: Split up into query and mutation files
 export const messageResolvers = {
@@ -120,6 +121,7 @@ export const messageResolvers = {
         newMessage: {
           ...createdMsg.dataValues,
           senderID: ctx.userID,
+          chatID: createdMsg.dataValues.chatId,
         },
       });
       return {
@@ -189,9 +191,17 @@ export const messageResolvers = {
   },
   Subscription: {
     newMessage: {
-      subscribe: (_: unknown, __: any, ctx: any) => {
-        return ctx.pubsub.asyncIterableIterator(SubTypes.NEW_MESSAGE);
-      },
+      subscribe: withFilter(
+        (_: unknown, __: any, ctx: any) => {
+          return ctx.pubsub.asyncIterableIterator(SubTypes.NEW_MESSAGE);
+        },
+        (payload, variables) => {
+          // We publish the data so we know what the type is
+          const data = payload as NewMessage;
+          console.log(data.newMessage.chatID == variables.chatID);
+          return data.newMessage.chatID == variables.chatID;
+        }
+      ),
     },
   },
 };

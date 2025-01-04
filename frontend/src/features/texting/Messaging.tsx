@@ -5,6 +5,7 @@ import {
   ChatMessagesQuery,
   ChatMessagesQueryVariables,
   ChatMessagesDocument,
+  NewMessageDocument,
 } from '../../__generated__/graphql'
 import { MessageInput } from './MessageInput'
 import { CurrentChatProfile } from './CurrentChatProfile'
@@ -24,9 +25,10 @@ const stackStyle = {
 
 export const Messaging = ({ chatID }: Iprops) => {
   const colors = useColorScheme()
-  const [getMessages, { data }] = useLazyQuery<ChatMessagesQuery, ChatMessagesQueryVariables>(
-    ChatMessagesDocument
-  )
+  const [getMessages, { data, subscribeToMore }] = useLazyQuery<
+    ChatMessagesQuery,
+    ChatMessagesQueryVariables
+  >(ChatMessagesDocument)
   const chatMessages = data?.chatMessages
   const chatInfo = data?.currentChatInfo
 
@@ -35,6 +37,20 @@ export const Messaging = ({ chatID }: Iprops) => {
       void getMessages({ variables: { chatID } })
     }
   }, [chatID, getMessages])
+
+  const subscribeToMoreCallback = () =>
+    subscribeToMore({
+      document: NewMessageDocument,
+      variables: { chatId: chatID },
+      updateQuery: (prev, { subscriptionData }) => {
+        const newMsg = subscriptionData.data.newMessage
+        console.log(prev)
+        console.log(chatID)
+        return Object.assign({}, prev, {
+          chatMessages: [...prev.chatMessages, newMsg],
+        })
+      },
+    })
 
   return (
     <Paper
@@ -49,7 +65,10 @@ export const Messaging = ({ chatID }: Iprops) => {
         {chatID && chatMessages && chatInfo ? (
           <>
             <CurrentChatProfile chatUsers={chatInfo} status="now" />
-            <DisplayMessages messages={chatMessages} />
+            <DisplayMessages
+              messages={chatMessages}
+              subscribeToNewMessages={subscribeToMoreCallback}
+            />
             <MessageInput chatID={chatID} />
           </>
         ) : (

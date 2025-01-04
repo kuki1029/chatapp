@@ -21,7 +21,8 @@ export interface Message {
 
 export interface NewMessage {
   newMessage: {
-    id: String;
+    id: string;
+    chatID: string;
     content: string;
     createdAt: string;
     senderID: string;

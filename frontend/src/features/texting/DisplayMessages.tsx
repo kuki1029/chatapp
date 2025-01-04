@@ -3,23 +3,14 @@ import { ChatBubble } from './ChatBubble'
 import { ChatMessagesQuery } from '../../__generated__/graphql'
 import { useContext, useEffect, useRef } from 'react'
 import { UserIdContext } from '../auth/UserIDContext'
-import { useSubscription } from '@apollo/client'
-import {
-  NewMessageDocument,
-  NewMessageSubscription,
-  NewMessageSubscriptionVariables,
-} from '../../__generated__/graphql'
 import './chat.css'
 
 interface Iprops {
   messages: ChatMessagesQuery['chatMessages']
+  subscribeToNewMessages: () => void
 }
 
-export const DisplayMessages = ({ messages }: Iprops) => {
-  const { data, loading } = useSubscription<
-    NewMessageSubscription,
-    NewMessageSubscriptionVariables
-  >(NewMessageDocument, { variables: { chatId: '2' } })
+export const DisplayMessages = ({ messages, subscribeToNewMessages }: Iprops) => {
   const userID = useContext(UserIdContext)
   const scrollView = useRef<HTMLDivElement>(null)
 
@@ -29,8 +20,13 @@ export const DisplayMessages = ({ messages }: Iprops) => {
     }
   })
 
-  console.log(data, loading)
+  useEffect(() => {
+    subscribeToNewMessages()
+    // Disable here bcoz of how apollo client is implemented. Needs to unsubscribe on unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
+  // TODO: Fix the alignemnet when only one message
   return (
     <ScrollArea offsetScrollbars miw={'100%'} viewportRef={scrollView}>
       <Flex gap="7" justify="flex-end" align="flex-end" direction="column" wrap="nowrap">

@@ -7,6 +7,7 @@ export const messageTypeDefs = gql`
     content: String!
     createdAt: String!
     senderID: ID!
+    chatID: String
   }
 
   input MessageInput {

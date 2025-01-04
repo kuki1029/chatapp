@@ -48,6 +48,8 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
               active={index === active}
               onClick={() => {
                 setActive(index)
+                console.log('=====')
+                console.log(chat.id)
                 setChatID(chat.id)
               }}
               variant="filled"
