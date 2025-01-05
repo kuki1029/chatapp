@@ -56,8 +56,11 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
   credentials: 'include',
 })
-loadErrorMessages()
-loadDevMessages()
+
+if (!(import.meta.env.MODE === 'production')) {
+  loadErrorMessages()
+  loadDevMessages()
+}
 
 createRoot(rootElem).render(
   <ApolloProvider client={client}>

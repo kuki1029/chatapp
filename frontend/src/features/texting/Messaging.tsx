@@ -25,38 +25,42 @@ const stackStyle = {
 
 export const Messaging = ({ chatID }: Iprops) => {
   const colors = useColorScheme()
-
-  // const unsub = useRef<any>()
   const [getMessages, { data, subscribeToMore }] = useLazyQuery<
     ChatMessagesQuery,
     ChatMessagesQueryVariables
   >(ChatMessagesDocument, {})
   const chatMessages = data?.chatMessages
   const chatInfo = data?.currentChatInfo
+  // Handle unsubbing ourselves
+  const currentSubscription = useRef<(() => void) | null>(null)
 
   useEffect(() => {
-    // console.log(unsub)
-    // if (unsub.current) {
-    //   unsub.current()
-    // }
     if (chatID) {
       void getMessages({ variables: { chatID } })
-      // unsub.current = subscribeToMoreCallback(chatID)
+      if (currentSubscription.current) {
+        // This unsubs the current subscription
+        currentSubscription.current()
+        currentSubscription.current = null
+      } else {
+        // We store the unsubscribe functionm within current
+        currentSubscription.current = subscribeToMoreCallback(chatID)
+      }
     }
+
+    return () => {
+      if (currentSubscription.current) {
+        currentSubscription.current()
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatID, getMessages])
 
   const subscribeToMoreCallback = (chatID: string) => {
-    console.log(`ChatID ${chatID}`)
-    subscribeToMore({
+    return subscribeToMore({
       document: NewMessageDocument,
       variables: { chatId: chatID },
-      updateQuery: (prev, { subscriptionData, ...data }) => {
-        console.log(data)
+      updateQuery: (prev, { subscriptionData }) => {
         const newMsg = subscriptionData.data.newMessage
-        console.log('SUBBED')
-        console.log(prev)
-        console.log(chatID)
-        console.log([...prev.chatMessages, newMsg])
         return Object.assign({}, prev, {
           chatMessages: [...prev.chatMessages, newMsg],
         })

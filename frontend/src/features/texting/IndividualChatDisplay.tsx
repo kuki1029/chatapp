@@ -31,16 +31,32 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
       subscribeToMore({
         document: NewUserChatDocument,
         updateQuery: (prev, { subscriptionData }) => {
-          const newData = prev.userChats.map((chat) => {
-            if (chat.id === subscriptionData.data.newUserChat?.id) {
-              return {
-                ...chat,
-                lastMsg: subscriptionData.data.newUserChat.lastMsg,
-                lastMsgTime: subscriptionData.data.newUserChat.lastMsgTime,
+          const newData = prev.userChats
+            .map((chat) => {
+              if (chat.id === subscriptionData.data.newUserChat?.id) {
+                return {
+                  ...chat,
+                  lastMsg: subscriptionData.data.newUserChat.lastMsg,
+                  lastMsgTime: subscriptionData.data.newUserChat.lastMsgTime,
+                }
               }
-            }
-            return chat
-          })
+              return chat
+            })
+            .sort((a, b) => {
+              if (a.lastMsgTime === '' && b.lastMsgTime === '') return 0
+              if (a.lastMsgTime === '') return -1 // `a` has no messages, place it higher
+              if (b.lastMsgTime === '') return 1 // `b` has no messages, place it higher
+              console.log(a.lastMsgTime, b.lastMsgTime)
+              console.log(new Date(b.lastMsgTime).getTime() - new Date(a.lastMsgTime).getTime())
+
+              // Sort by lastMsgTime (most recent first) for chats with messages
+              if (b.lastMsgTime && a.lastMsgTime) {
+                console.log('AAA')
+                return new Date(b.lastMsgTime).getTime() - new Date(a.lastMsgTime).getTime()
+              }
+              return 0 // When they are null
+            })
+          console.log(newData)
           return Object.assign({}, prev, {
             userChats: newData,
           })

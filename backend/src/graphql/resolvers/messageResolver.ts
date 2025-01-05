@@ -49,27 +49,38 @@ export const messageResolvers = {
         },
       });
 
-      return chatsWithAssociations.map((chat) => {
-        const { id, members, messages } = chat.dataValues;
+      return chatsWithAssociations
+        .map((chat) => {
+          const { id, members, messages } = chat.dataValues;
 
-        const users = members
-          .map((member: any) => member.dataValues.user.dataValues)
-          .filter((user: any) => user.id != ctx.userID);
-        // This technically shouldn't be an array but sequelize returns array as we
-        // use findAll
-        const lastMsg = messages
-          .map((msg: any) => msg.dataValues.content)
-          .toString();
-        const lastMsgTime = messages
-          .map((msg: any) => msg.dataValues.createdAt)
-          .toString();
-        return {
-          id,
-          users,
-          lastMsg,
-          lastMsgTime,
-        };
-      });
+          const users = members
+            .map((member: any) => member.dataValues.user.dataValues)
+            .filter((user: any) => user.id != ctx.userID);
+          // This technically shouldn't be an array but sequelize returns array as we
+          // use findAll
+          const lastMsg = messages
+            .map((msg: any) => msg.dataValues.content)
+            .toString();
+          const lastMsgTime = messages
+            .map((msg: any) => msg.dataValues.createdAt)
+            .toString();
+          return {
+            id,
+            users,
+            lastMsg,
+            lastMsgTime,
+          };
+        })
+        .sort((a, b) => {
+          if (a.lastMsgTime === "" && b.lastMsgTime === "") return 0;
+          if (a.lastMsgTime === "") return -1; // `a` has no messages, place it higher
+          if (b.lastMsgTime === "") return 1; // `b` has no messages, place it higher
+          // Sort by lastMsgTime (most recent first) for chats with messages
+          return (
+            new Date(b.lastMsgTime).getTime() -
+            new Date(a.lastMsgTime).getTime()
+          );
+        });
     },
     chatMessages: async (_: unknown, args: { chatID: string }) => {
       const messages = await ChatMessage.findAll({
@@ -135,7 +146,7 @@ export const messageResolvers = {
           id: msg.chatID,
           userID: ctx.userID,
           lastMsg: createdMsg.dataValues.content,
-          lastMsgTime: createdMsg.dataValues.createdAt,
+          lastMsgTime: createdMsg.dataValues.createdAt.toString(),
         },
       });
       return {
@@ -211,8 +222,7 @@ export const messageResolvers = {
           //TODO: add auth here to check if chat id is part of user
           return ctx.pubsub.asyncIterableIterator(SubTypes.NEW_MESSAGE);
         },
-        (payload, variables, ctx) => {
-          console.log(ctx);
+        (payload, variables) => {
           // We publish the data so we know what the type is
           const data = payload as NewMessage;
           return data.newMessage.chatID == variables.chatID;
