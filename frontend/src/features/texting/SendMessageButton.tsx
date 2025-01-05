@@ -4,13 +4,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { ActionIcon } from '@mantine/core'
 import { IconArrowRight } from '@tabler/icons-react'
-import { MessageTypes, UserChatsDocument } from '../../__generated__/graphql'
+import { MessageTypes } from '../../__generated__/graphql'
 import { useMutation } from '@apollo/client'
 import {
   AddMessageMutation,
   AddMessageMutationVariables,
   AddMessageDocument,
-  ChatMessagesDocument,
 } from '../../__generated__/graphql'
 import { useColorScheme } from '../../utility/useColorScheme'
 import { useWindowEvent } from '@mantine/hooks'

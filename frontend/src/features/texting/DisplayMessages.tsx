@@ -1,4 +1,4 @@
-import { ScrollArea, Flex } from '@mantine/core'
+import { ScrollArea, Stack } from '@mantine/core'
 import { ChatBubble } from './ChatBubble'
 import { ChatMessagesQuery } from '../../__generated__/graphql'
 import { useContext, useEffect, useRef } from 'react'
@@ -7,12 +7,9 @@ import './chat.css'
 
 interface Iprops {
   messages: ChatMessagesQuery['chatMessages']
-  chatID: string
-  subscribeToNewMessages?: (chatID: string) => void
 }
 
-export const DisplayMessages = ({ messages, chatID }: Iprops) => {
-  // console.log(messages)
+export const DisplayMessages = ({ messages }: Iprops) => {
   const userID = useContext(UserIdContext)
   const scrollView = useRef<HTMLDivElement>(null)
 
@@ -22,10 +19,25 @@ export const DisplayMessages = ({ messages, chatID }: Iprops) => {
     }
   })
 
-  // TODO: Fix the alignemnet when only one message
   return (
-    <ScrollArea offsetScrollbars miw={'100%'} viewportRef={scrollView}>
-      <Flex gap="7" justify="flex-end" align="flex-end" direction="column" wrap="nowrap">
+    <ScrollArea
+      offsetScrollbars
+      miw={'100%'}
+      viewportRef={scrollView}
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+      }}
+      styles={{
+        viewport: {
+          height: 'auto',
+        },
+      }}
+    >
+      <Stack align="center" justify="flex-end" gap="xs">
+        {/* Spacer to push content down */}
         {messages.map((msg) => {
           // I could format this in backend but I want to give frontend freedom to change based on timezone
           const date = new Date(parseInt(msg.createdAt))
@@ -39,7 +51,7 @@ export const DisplayMessages = ({ messages, chatID }: Iprops) => {
             />
           )
         })}
-      </Flex>
+      </Stack>
     </ScrollArea>
   )
 }

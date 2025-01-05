@@ -9,12 +9,15 @@ import {
 import { useEffect, useState } from 'react'
 import { upperFirst } from '@mantine/hooks'
 import './chat.css'
+import { useContext } from 'react'
+import { UserIdContext } from '../auth/UserIDContext'
 
 interface Iprops {
   setChatID: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
 export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
+  const userID = useContext(UserIdContext)
   const [active, setActive] = useState(-1)
   const { data, loading, subscribeToMore } = useQuery<UserChatsQuery, UserChatsQueryVariables>(
     UserChatsDocument,
@@ -46,17 +49,16 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
               if (a.lastMsgTime === '' && b.lastMsgTime === '') return 0
               if (a.lastMsgTime === '') return -1 // `a` has no messages, place it higher
               if (b.lastMsgTime === '') return 1 // `b` has no messages, place it higher
-              console.log(a.lastMsgTime, b.lastMsgTime)
-              console.log(new Date(b.lastMsgTime).getTime() - new Date(a.lastMsgTime).getTime())
 
               // Sort by lastMsgTime (most recent first) for chats with messages
               if (b.lastMsgTime && a.lastMsgTime) {
-                console.log('AAA')
                 return new Date(b.lastMsgTime).getTime() - new Date(a.lastMsgTime).getTime()
               }
               return 0 // When they are null
             })
-          console.log(newData)
+          if (userID && userID === subscriptionData.data.newUserChat?.userID) {
+            setActive(0)
+          }
           return Object.assign({}, prev, {
             userChats: newData,
           })
@@ -92,7 +94,6 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
               active={index === active}
               onClick={() => {
                 setActive(index)
-                console.log(`Clicked on ${chat.id}`)
                 setChatID(chat.id)
               }}
               variant="filled"

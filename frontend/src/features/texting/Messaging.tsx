@@ -81,11 +81,7 @@ export const Messaging = ({ chatID }: Iprops) => {
         {chatID && chatMessages && chatInfo ? (
           <>
             <CurrentChatProfile chatUsers={chatInfo} status="now" />
-            <DisplayMessages
-              messages={chatMessages}
-              chatID={chatID}
-              subscribeToNewMessages={subscribeToMoreCallback}
-            />
+            <DisplayMessages messages={chatMessages} />
             <MessageInput chatID={chatID} />
           </>
         ) : (
