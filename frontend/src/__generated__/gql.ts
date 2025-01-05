@@ -25,6 +25,7 @@ const documents = {
     "\n  query UserChats {\n    userChats {\n      id\n      users {\n        id\n        name\n        avatar\n      }\n      lastMsg\n      lastMsgTime\n    }\n  }\n": types.UserChatsDocument,
     "\n  query ChatMessages($chatID: String) {\n    chatMessages(chatID: $chatID) {\n      id\n      type\n      content\n      createdAt\n      senderID\n    }\n    currentChatInfo(chatID: $chatID) {\n      id\n      name\n      avatar\n    }\n  }\n": types.ChatMessagesDocument,
     "\n  subscription NewMessage($chatId: String) {\n    newMessage(chatID: $chatId) {\n      id\n      type\n      content\n      createdAt\n      senderID\n    }\n  }\n": types.NewMessageDocument,
+    "\n  subscription NewUserChat($userId: String) {\n    newUserChat(userID: $userId) {\n      id\n      userID\n      lastMsg\n      lastMsgTime\n    }\n  }\n": types.NewUserChatDocument,
 };
 
 /**
@@ -85,6 +86,10 @@ export function gql(source: "\n  query ChatMessages($chatID: String) {\n    chat
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  subscription NewMessage($chatId: String) {\n    newMessage(chatID: $chatId) {\n      id\n      type\n      content\n      createdAt\n      senderID\n    }\n  }\n"): (typeof documents)["\n  subscription NewMessage($chatId: String) {\n    newMessage(chatID: $chatId) {\n      id\n      type\n      content\n      createdAt\n      senderID\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  subscription NewUserChat($userId: String) {\n    newUserChat(userID: $userId) {\n      id\n      userID\n      lastMsg\n      lastMsgTime\n    }\n  }\n"): (typeof documents)["\n  subscription NewUserChat($userId: String) {\n    newUserChat(userID: $userId) {\n      id\n      userID\n      lastMsg\n      lastMsgTime\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

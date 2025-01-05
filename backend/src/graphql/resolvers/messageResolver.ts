@@ -1,7 +1,13 @@
 import { Chat, ChatMember, User, ChatMessage } from "../../models/models";
 import { Op } from "sequelize";
 import db from "../../utils/db";
-import { MessageTypes, Message, SubTypes, NewMessage } from "../../../types";
+import {
+  MessageTypes,
+  Message,
+  SubTypes,
+  NewMessage,
+  NewUserChat,
+} from "../../../types";
 import { MyContext } from "../../..";
 import { withFilter } from "graphql-subscriptions";
 
@@ -117,11 +123,19 @@ export const messageResolvers = {
         chatId: msg.chatID,
         userId: ctx.userID,
       });
-      ctx.pubsub.publish("NEW_MESSAGE", {
+      ctx.pubsub.publish(SubTypes.NEW_MESSAGE, {
         newMessage: {
           ...createdMsg.dataValues,
           senderID: ctx.userID,
           chatID: createdMsg.dataValues.chatId,
+        },
+      });
+      ctx.pubsub.publish(SubTypes.NEW_USERCHAT, {
+        newUserChat: {
+          id: msg.chatID,
+          userID: ctx.userID,
+          lastMsg: createdMsg.dataValues.content,
+          lastMsgTime: createdMsg.dataValues.createdAt,
         },
       });
       return {
@@ -193,13 +207,42 @@ export const messageResolvers = {
     newMessage: {
       subscribe: withFilter(
         (_: unknown, __: any, ctx: any) => {
+          //TODO: Change any type
+          //TODO: add auth here to check if chat id is part of user
           return ctx.pubsub.asyncIterableIterator(SubTypes.NEW_MESSAGE);
         },
-        (payload, variables) => {
+        (payload, variables, ctx) => {
+          console.log(ctx);
           // We publish the data so we know what the type is
           const data = payload as NewMessage;
+          console.log(variables.chatID);
           console.log(data.newMessage.chatID == variables.chatID);
           return data.newMessage.chatID == variables.chatID;
+        }
+      ),
+    },
+    newUserChat: {
+      subscribe: withFilter(
+        (_: unknown, args: { userID: string } | undefined, ctx: any) => {
+          console.log("-----");
+
+          console.log(args?.userID != ctx.userID);
+          if (args?.userID != ctx.userID) {
+            throw new Error("401 Unauthorized");
+          }
+          //TODO: Change any type
+          return ctx.pubsub.asyncIterableIterator(SubTypes.NEW_USERCHAT);
+        },
+        (payload, variables, ctx) => {
+          //TODO: Add types to ctx
+          console.log("=========");
+          console.log(variables?.userID != ctx.userID);
+          if (variables?.userID != ctx.userID) {
+            return false;
+          }
+          // We publish the data so we know what the type is
+          const data = payload as NewUserChat;
+          return data.newUserChat.userID == ctx.userID;
         }
       ),
     },

@@ -1,9 +1,12 @@
-import { useQuery } from '@apollo/client'
+import { useQuery, useSubscription } from '@apollo/client'
 import { ScrollArea, LoadingOverlay, NavLink, Avatar, Text, Box } from '@mantine/core'
 import {
   UserChatsQuery,
   UserChatsQueryVariables,
   UserChatsDocument,
+  NewUserChatDocument,
+  NewUserChatSubscription,
+  NewUserChatSubscriptionVariables,
 } from '../../__generated__/graphql'
 import { useState } from 'react'
 import { upperFirst } from '@mantine/hooks'
@@ -21,6 +24,13 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
       open()
     },
   })
+
+  const { data: dataSub } = useSubscription<
+    NewUserChatSubscription,
+    NewUserChatSubscriptionVariables
+  >(NewUserChatDocument, { variables: { userId: '2' } }) //TODO: CHNAGE THIS
+  console.log('NEW DATA')
+  console.log(dataSub)
 
   return (
     <ScrollArea miw={'100%'} scrollbars="y" scrollHideDelay={0}>
@@ -48,8 +58,7 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
               active={index === active}
               onClick={() => {
                 setActive(index)
-                console.log('=====')
-                console.log(chat.id)
+                console.log(`Clicked on ${chat.id}`)
                 setChatID(chat.id)
               }}
               variant="filled"

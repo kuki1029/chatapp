@@ -2,6 +2,7 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { createServer } from "http";
+import http from "http";
 import express from "express";
 import { Response, Request } from "express";
 import { makeExecutableSchema } from "@graphql-tools/schema";
@@ -12,10 +13,11 @@ import { resolvers } from "./src/graphql/resolvers/resolvers";
 import { typeDefs } from "./src/graphql/schema/schemas";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { parse } from "cookie";
 import jwt from "jsonwebtoken";
 import env from "./src/utils/config";
 import { PubSub } from "graphql-subscriptions";
-import { NewMessage } from "./types";
+import { NewMessage, NewUserChat } from "./types";
 
 export interface MyContext {
   res: Response;
@@ -23,6 +25,7 @@ export interface MyContext {
   userID: string | null;
   pubsub: PubSub<{
     NEW_MESSAGE: NewMessage;
+    NEW_USERCHAT: NewUserChat;
   }>;
 }
 
@@ -31,7 +34,11 @@ const start = async () => {
     NEW_MESSAGE: NewMessage;
   }>();
   const corsOptions = {
-    origin: ["http://localhost:5173", "https://studio.apollographql.com"],
+    origin: [
+      "http://localhost:5173",
+      "https://studio.apollographql.com",
+      "https://sandbox.embed.apollographql.com",
+    ],
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
     credentials: true,
   };
@@ -50,8 +57,15 @@ const start = async () => {
   const serverCleanup = useServer(
     {
       schema,
-      context: async () => {
-        return { pubsub };
+      context: async (ctx) => {
+        const userID = handleAuth(ctx.extra.request);
+        return { pubsub, userID }; //TODO: Add type here for funciton so it fixes in resolvers
+      },
+      onConnect: async (ctx) => {
+        handleAuth(ctx.extra.request);
+      },
+      onSubscribe: async (ctx) => {
+        handleAuth(ctx.extra.request);
       },
     },
     wsServer
@@ -111,3 +125,28 @@ const start = async () => {
 };
 
 start();
+
+// Handle authentication for websocket. Don't allow nonlogged in users to even connect
+function handleAuth(request: http.IncomingMessage) {
+  const cookiesHeader = request.headers["cookie"];
+  console.log(`cookiesHeader${cookiesHeader}`);
+  if (!cookiesHeader) {
+    throw new Error("401 Unauthorized");
+  }
+  let user = null;
+  const { token } = parse(cookiesHeader);
+  //TODO: Move this logic to utils or somewhere else
+  if (token) {
+    try {
+      user = jwt.verify(token, env.SECRET) as unknown as string;
+    } catch (err) {
+      console.log("Invalid token");
+    }
+  } else {
+    throw new Error("401 Unauthorized");
+  }
+  if (!user) {
+    throw new Error("401 Unauthorized");
+  }
+  return user;
+}

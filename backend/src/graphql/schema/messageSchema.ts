@@ -34,6 +34,13 @@ export const messageTypeDefs = gql`
     lastMsgTime: String
   }
 
+  type ChatSubscribe {
+    id: ID!
+    userID: ID!
+    lastMsg: String
+    lastMsgTime: String
+  }
+
   type Query {
     userChats: [Chat!]!
     chatMessages(chatID: String): [Message!]!
@@ -48,5 +55,6 @@ export const messageTypeDefs = gql`
 
   type Subscription {
     newMessage(chatID: String): Message
+    newUserChat(userID: String): ChatSubscribe
   }
 `;

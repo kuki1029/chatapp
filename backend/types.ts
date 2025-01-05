@@ -11,12 +11,13 @@ export enum MessageTypes {
 
 export enum SubTypes {
   NEW_MESSAGE = "NEW_MESSAGE",
+  NEW_USERCHAT = "NEW_USERCHAT",
 }
 
 export interface Message {
   type: MessageTypes;
-  content: String;
-  chatID: String;
+  content: string;
+  chatID: string;
 }
 
 export interface NewMessage {
@@ -27,5 +28,14 @@ export interface NewMessage {
     createdAt: string;
     senderID: string;
     type: MessageTypes;
+  };
+}
+
+export interface NewUserChat {
+  newUserChat: {
+    id: string;
+    userID: string;
+    lastMsg: string;
+    lastMsgTime: string;
   };
 }

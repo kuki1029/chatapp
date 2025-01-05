@@ -67,3 +67,14 @@ export const NEW_MESSAGE_SUB = gql`
     }
   }
 `
+
+export const UPDATE_USER_CHAT = gql`
+  subscription NewUserChat($userId: String) {
+    newUserChat(userID: $userId) {
+      id
+      userID
+      lastMsg
+      lastMsgTime
+    }
+  }
+`
