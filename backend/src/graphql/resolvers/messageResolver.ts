@@ -215,34 +215,25 @@ export const messageResolvers = {
           console.log(ctx);
           // We publish the data so we know what the type is
           const data = payload as NewMessage;
-          console.log(variables.chatID);
-          console.log(data.newMessage.chatID == variables.chatID);
           return data.newMessage.chatID == variables.chatID;
         }
       ),
     },
     newUserChat: {
       subscribe: withFilter(
-        (_: unknown, args: { userID: string } | undefined, ctx: any) => {
-          console.log("-----");
-
-          console.log(args?.userID != ctx.userID);
-          if (args?.userID != ctx.userID) {
-            throw new Error("401 Unauthorized");
-          }
+        (_: unknown, _args, ctx: any) => {
           //TODO: Change any type
           return ctx.pubsub.asyncIterableIterator(SubTypes.NEW_USERCHAT);
         },
-        (payload, variables, ctx) => {
+        async (payload, _variables, ctx) => {
           //TODO: Add types to ctx
-          console.log("=========");
-          console.log(variables?.userID != ctx.userID);
-          if (variables?.userID != ctx.userID) {
-            return false;
-          }
           // We publish the data so we know what the type is
           const data = payload as NewUserChat;
-          return data.newUserChat.userID == ctx.userID;
+          // Find if user is in that chat
+          const chatMember = await ChatMember.findOne({
+            where: { chatId: data.newUserChat.id, userId: ctx.userID },
+          });
+          return !!chatMember;
         }
       ),
     },

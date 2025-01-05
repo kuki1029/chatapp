@@ -29,7 +29,6 @@ export const SendMessageButton = ({ chatID, msg, setMsg }: Iprops) => {
       onError: (error) => {
         console.log(error) //TODO: Handle errors properly with notifcation
       },
-      refetchQueries: [UserChatsDocument],
     }
   )
 

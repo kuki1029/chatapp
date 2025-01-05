@@ -11,7 +11,7 @@ interface Iprops {
   subscribeToNewMessages?: (chatID: string) => void
 }
 
-export const DisplayMessages = ({ messages, subscribeToNewMessages, chatID }: Iprops) => {
+export const DisplayMessages = ({ messages, chatID }: Iprops) => {
   // console.log(messages)
   const userID = useContext(UserIdContext)
   const scrollView = useRef<HTMLDivElement>(null)
@@ -21,17 +21,6 @@ export const DisplayMessages = ({ messages, subscribeToNewMessages, chatID }: Ip
       scrollView.current.scrollTo({ top: scrollView.current.scrollHeight })
     }
   })
-
-  useEffect(() => {
-    console.log('useEffect')
-    console.log(chatID)
-    subscribeToNewMessages(chatID)
-    // Disable here bcoz of how apollo client is implemented. Needs to unsubscribe on unmount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    return () => {
-      console.log('unmount')
-    }
-  }, [])
 
   // TODO: Fix the alignemnet when only one message
   return (

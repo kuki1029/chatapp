@@ -1,6 +1,6 @@
 import { Paper, Stack, Text } from '@mantine/core'
 import { useEffect, useRef } from 'react'
-import { useLazyQuery, useApolloClient } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import {
   ChatMessagesQuery,
   ChatMessagesQueryVariables,
@@ -25,8 +25,7 @@ const stackStyle = {
 
 export const Messaging = ({ chatID }: Iprops) => {
   const colors = useColorScheme()
-  const client = useApolloClient()
-  console.log(client.cache)
+
   // const unsub = useRef<any>()
   const [getMessages, { data, subscribeToMore }] = useLazyQuery<
     ChatMessagesQuery,

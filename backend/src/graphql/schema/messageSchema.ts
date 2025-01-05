@@ -55,6 +55,6 @@ export const messageTypeDefs = gql`
 
   type Subscription {
     newMessage(chatID: String): Message
-    newUserChat(userID: String): ChatSubscribe
+    newUserChat: ChatSubscribe
   }
 `;

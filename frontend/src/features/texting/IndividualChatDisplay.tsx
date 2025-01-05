@@ -1,14 +1,12 @@
-import { useQuery, useSubscription } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { ScrollArea, LoadingOverlay, NavLink, Avatar, Text, Box } from '@mantine/core'
 import {
   UserChatsQuery,
   UserChatsQueryVariables,
   UserChatsDocument,
   NewUserChatDocument,
-  NewUserChatSubscription,
-  NewUserChatSubscriptionVariables,
 } from '../../__generated__/graphql'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { upperFirst } from '@mantine/hooks'
 import './chat.css'
 
@@ -18,19 +16,39 @@ interface Iprops {
 
 export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
   const [active, setActive] = useState(-1)
-  const { data } = useQuery<UserChatsQuery, UserChatsQueryVariables>(UserChatsDocument, {
-    onError: (error) => {
-      console.log(error)
-      open()
-    },
-  })
+  const { data, loading, subscribeToMore } = useQuery<UserChatsQuery, UserChatsQueryVariables>(
+    UserChatsDocument,
+    {
+      onError: (error) => {
+        console.log(error)
+        open()
+      },
+    }
+  )
 
-  const { data: dataSub } = useSubscription<
-    NewUserChatSubscription,
-    NewUserChatSubscriptionVariables
-  >(NewUserChatDocument, { variables: { userId: '2' } }) //TODO: CHNAGE THIS
-  console.log('NEW DATA')
-  console.log(dataSub)
+  useEffect(() => {
+    if (data && !loading) {
+      subscribeToMore({
+        document: NewUserChatDocument,
+        updateQuery: (prev, { subscriptionData }) => {
+          const newData = prev.userChats.map((chat) => {
+            if (chat.id === subscriptionData.data.newUserChat?.id) {
+              return {
+                ...chat,
+                lastMsg: subscriptionData.data.newUserChat.lastMsg,
+                lastMsgTime: subscriptionData.data.newUserChat.lastMsgTime,
+              }
+            }
+            return chat
+          })
+          return Object.assign({}, prev, {
+            userChats: newData,
+          })
+        },
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, loading])
 
   return (
     <ScrollArea miw={'100%'} scrollbars="y" scrollHideDelay={0}>
