@@ -8,7 +8,7 @@ import { split, HttpLink } from '@apollo/client'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
-import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev'
+// import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev'
 
 const rootElem = document.getElementById('root')
 
@@ -26,7 +26,10 @@ const httpLink = new HttpLink({
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: 'ws://localhost:4000/graphql',
+    url:
+      import.meta.env.MODE === 'production'
+        ? 'ws://localhost:8080/api/'
+        : 'ws://localhost:4000/graphql',
   })
 )
 
@@ -57,10 +60,10 @@ const client = new ApolloClient({
   credentials: 'include',
 })
 
-if (!(import.meta.env.MODE === 'production')) {
-  loadErrorMessages()
-  loadDevMessages()
-}
+// if (!(import.meta.env.MODE === 'production')) {
+//   loadErrorMessages()
+//   loadDevMessages()
+// }
 
 createRoot(rootElem).render(
   <ApolloProvider client={client}>

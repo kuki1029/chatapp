@@ -129,6 +129,8 @@ start();
 // Handle authentication for websocket. Don't allow nonlogged in users to even connect
 function handleAuth(request: http.IncomingMessage) {
   const cookiesHeader = request.headers["cookie"];
+  console.log(cookiesHeader);
+  console.log("=================");
   if (!cookiesHeader) {
     throw new Error("401 Unauthorized");
   }

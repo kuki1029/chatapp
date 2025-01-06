@@ -15,7 +15,6 @@ import {
   LoggedInAndUserIdDocument,
 } from './__generated__/graphql.ts'
 import { UserIdContext } from './features/auth/UserIDContext.tsx'
-import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev'
 
 function App() {
   const isLoginPage = useMatch('/login')

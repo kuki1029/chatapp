@@ -60,13 +60,15 @@ const Orb = ({ hue }: { hue: number }) => {
         cy={to[0]}
         r={r}
         fill={`url(#grad-${id.toString()})`}
-        style={{
-          '--duration': `${(d / 15).toString()}s`,
-          '--from-x': from[0],
-          '--from-y': from[1],
-          '--to-x': to[0],
-          '--to-y': to[1],
-        }}
+        style={
+          {
+            '--duration': `${(d / 15).toString()}s`,
+            '--from-x': from[0],
+            '--from-y': from[1],
+            '--to-x': to[0],
+            '--to-y': to[1],
+          } as React.CSSProperties & { [key: string]: string | number }
+        } // Need this type cast because TS doesn't understand custom variables. Could just define a custom type too to fix it
       />
       <Gradient id={`grad-${id.toString()}`} hue={hue} />
     </>
