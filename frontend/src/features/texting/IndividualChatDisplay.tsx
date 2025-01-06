@@ -6,7 +6,7 @@ import {
   UserChatsDocument,
   NewUserChatDocument,
 } from '../../__generated__/graphql'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { upperFirst } from '@mantine/hooks'
 import './chat.css'
 import { useContext } from 'react'
@@ -19,6 +19,8 @@ interface Iprops {
 export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
   const userID = useContext(UserIdContext)
   const [active, setActive] = useState(-1)
+  const currentSub = useRef<(() => void) | null>(null)
+  const activeRef = useRef<number>(active)
   const { data, loading, subscribeToMore } = useQuery<UserChatsQuery, UserChatsQueryVariables>(
     UserChatsDocument,
     {
@@ -30,10 +32,18 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
   )
 
   useEffect(() => {
-    if (data && !loading) {
-      subscribeToMore({
+    activeRef.current = active
+  }, [active])
+
+  //TODO: CLEAN UP THIS
+  useEffect(() => {
+    if (data && !loading && !currentSub.current) {
+      currentSub.current = subscribeToMore({
         document: NewUserChatDocument,
         updateQuery: (prev, { subscriptionData }) => {
+          const newIndex = prev.userChats.findIndex((chat) => {
+            return chat.id === subscriptionData.data.newUserChat?.id
+          })
           const newData = prev.userChats
             .map((chat) => {
               if (chat.id === subscriptionData.data.newUserChat?.id) {
@@ -56,9 +66,18 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
               }
               return 0 // When they are null
             })
-          if (userID && userID === subscriptionData.data.newUserChat?.userID) {
-            setActive(0)
+          const active = activeRef.current
+          if (!(active === -1)) {
+            // Logic to change the selected chat if the order changes.
+            if (userID && userID === subscriptionData.data.newUserChat?.userID) {
+              setActive(0)
+            } else if (newIndex === active) {
+              setActive(0)
+            } else if (newIndex > active) {
+              setActive(active + 1)
+            }
           }
+
           return Object.assign({}, prev, {
             userChats: newData,
           })

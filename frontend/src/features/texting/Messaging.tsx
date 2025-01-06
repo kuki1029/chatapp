@@ -40,11 +40,8 @@ export const Messaging = ({ chatID }: Iprops) => {
       if (currentSubscription.current) {
         // This unsubs the current subscription
         currentSubscription.current()
-        currentSubscription.current = null
-      } else {
-        // We store the unsubscribe functionm within current
-        currentSubscription.current = subscribeToMoreCallback(chatID)
       }
+      currentSubscription.current = subscribeToMoreCallback(chatID)
     }
 
     return () => {
