@@ -19,7 +19,7 @@ if (!rootElem) {
 const httpLink = new HttpLink({
   uri:
     import.meta.env.MODE === 'production'
-      ? 'http://localhost:8080/api/'
+      ? 'http://chat.imkunal.ca:80/api/'
       : 'http://localhost:4000/graphql',
   credentials: 'include',
 })
@@ -28,7 +28,7 @@ const wsLink = new GraphQLWsLink(
   createClient({
     url:
       import.meta.env.MODE === 'production'
-        ? 'ws://localhost:8080/api/'
+        ? 'ws://chat.imkunal.ca:80/api/'
         : 'ws://localhost:4000/graphql',
   })
 )
