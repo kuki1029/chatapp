@@ -140,7 +140,6 @@ export type UserDto = {
   __typename?: 'UserDTO';
   email: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  token: Scalars['String']['output'];
 };
 
 export type LoginMutationVariables = Exact<{

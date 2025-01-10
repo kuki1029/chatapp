@@ -1,4 +1,4 @@
-import { Paper, Stack, Title, Group, ActionIcon } from '@mantine/core'
+import { Paper, Stack, Title, Group, ActionIcon, Tooltip } from '@mantine/core'
 import { useState } from 'react'
 import { IconMailPlus, IconUserSearch, IconUserCircle, IconBrandLine } from '@tabler/icons-react'
 import { CreateNewChat } from './CreateNewChat'
@@ -31,42 +31,62 @@ export const Chats = ({ setChatID }: Iprops) => {
       shadow="xl"
       radius="md"
       miw={'100%'}
-      style={{ zIndex: 9999, background: colors.bgColor }}
+      style={{ zIndex: 100, background: colors.bgColor }}
     >
       <Stack {...stackStyle}>
         {/* TODO: Move this to own component */}
         {/* TODO: Add hover tooltips to action icons */}
         {/* TODO: Add active icon to action button */}
         <Group p={'md'} miw={'100%'} justify="space-between">
-          <ActionIcon
-            size={'lg'}
-            radius="md"
-            color={colors.primary}
-            variant="subtle"
-            onClick={() => {
-              setCurrentView(ChatsDisplay.CHATS)
-            }}
-          >
-            <IconBrandLine size={18} stroke={1.5} />
-          </ActionIcon>
-          <ActionIcon
-            size={'lg'}
-            radius="md"
-            color={colors.primary}
-            variant="subtle"
-            onClick={() => {
-              setCurrentView(ChatsDisplay.FRIENDS)
-            }}
-          >
-            <IconMailPlus size={18} stroke={1.5} />
-          </ActionIcon>
-          <ActionIcon size={'lg'} radius="md" color={colors.primary} variant="subtle">
-            <IconUserSearch size={18} stroke={1.5} />
-          </ActionIcon>
+          <Tooltip openDelay={300} label="Messages" bg={colors.primary}>
+            <ActionIcon
+              size={'lg'}
+              radius="md"
+              color={colors.primary}
+              variant="subtle"
+              onClick={() => {
+                setCurrentView(ChatsDisplay.CHATS)
+              }}
+            >
+              <IconBrandLine size={18} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip openDelay={300} label="New Chat" bg={colors.primary}>
+            <ActionIcon
+              size={'lg'}
+              radius="md"
+              color={colors.primary}
+              variant="subtle"
+              onClick={() => {
+                setCurrentView(ChatsDisplay.FRIENDS)
+              }}
+            >
+              <IconMailPlus size={18} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip openDelay={300} label="Add Friend. Work In Progress." bg={colors.primary}>
+            <ActionIcon
+              size={'lg'}
+              radius="md"
+              color={colors.primary}
+              variant="subtle"
+              disabled={true}
+            >
+              <IconUserSearch size={18} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
           {/* TODO: Replace with pic of user profile */}
-          <ActionIcon size={'lg'} radius="md" color={colors.primary} variant="subtle">
-            <IconUserCircle size={18} stroke={1.5} />
-          </ActionIcon>
+          <Tooltip openDelay={300} label="Profile. Work In Progress" bg={colors.primary}>
+            <ActionIcon
+              size={'lg'}
+              radius="md"
+              color={colors.primary}
+              variant="subtle"
+              disabled={true}
+            >
+              <IconUserCircle size={18} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
         </Group>
         {currentView === ChatsDisplay.CHATS ? (
           <>

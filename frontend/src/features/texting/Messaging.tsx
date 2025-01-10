@@ -72,7 +72,7 @@ export const Messaging = ({ chatID }: Iprops) => {
       miw={'100%'}
       radius="md"
       p="xs"
-      style={{ zIndex: 9999, background: colors.bgColor }}
+      style={{ zIndex: 100, background: colors.bgColor }}
     >
       <Stack {...stackStyle}>
         {chatID && chatMessages && chatInfo ? (
