@@ -1,8 +1,14 @@
-import { Divider, Group, Paper, Title, Center, Container, Modal } from '@mantine/core'
-import { GoogleButton } from '../utility/GoogleButton.tsx'
+import { Divider, Paper, Title, Center, Container, Modal } from '@mantine/core'
 import { AuthForm } from '../features/auth/AuthForm.tsx'
 import { useMutation } from '@apollo/client'
-import { LoginMutation, LoginMutationVariables, LoginDocument } from '../__generated__/graphql'
+import {
+  LoginMutation,
+  LoginMutationVariables,
+  LoginDocument,
+  SignupDocument,
+  SignupMutation,
+  SignupMutationVariables,
+} from '../__generated__/graphql'
 import { useNavigate } from 'react-router-dom'
 
 interface Iprops {
@@ -27,6 +33,22 @@ export const Auth = ({ refetchLoginStatus }: Iprops) => {
       },
     }
   )
+  const [signup, { loading: signupLoading, error: signupError, data: signupData }] = useMutation<
+    SignupMutation,
+    SignupMutationVariables
+  >(SignupDocument, {
+    onError: (error) => {
+      console.log(error) //TODO: Handle error properly with notification and others too
+    },
+    onCompleted: (data) => {
+      if (data.signup) {
+        refetchLoginStatus()
+        navigate('/')
+      } else {
+        navigate('/login')
+      }
+    },
+  })
 
   return (
     <Center h={'100vh'}>
@@ -39,13 +61,14 @@ export const Auth = ({ refetchLoginStatus }: Iprops) => {
           The backend is currently shut down to save costs. Please reach out to test the demo.
         </Modal>
         <Paper radius="md" p="xl" withBorder shadow="lg">
-          <Group grow mb="md" mt="md">
-            {/* Google login */}
-            <GoogleButton radius="xl">Work In Progress</GoogleButton>
-          </Group>
-          <Divider label="Or continue with email" labelPosition="center" my="lg" />
           {/* Login/Signup Form */}
-          <AuthForm login={login} loading={loading} success={!!data?.login} />
+          <AuthForm
+            login={login}
+            signup={signup}
+            loading={loading || signupLoading}
+            success={!!data?.login}
+            signupSuccess={!!signupData?.signup}
+          />
         </Paper>
       </Container>
     </Center>

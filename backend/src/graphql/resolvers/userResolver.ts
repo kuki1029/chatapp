@@ -26,7 +26,8 @@ export const userResolvers = {
   Mutation: {
     signup: async (
       _: unknown,
-      args: { name: string; email: string; password: string }
+      args: { name: string; email: string; password: string },
+      ctx: MyContext
     ) => {
       const existingUser = await User.findOne({ where: { email: args.email } });
       // User already exists in DB
@@ -40,9 +41,14 @@ export const userResolvers = {
         email: args.email,
       });
       const token = jwt.sign(user.dataValues.id.toString(), env.SECRET);
+      ctx.res.cookie("token", token, {
+        httpOnly: true, // Prevents JavaScript access
+        secure: env.NODE_ENV === "production", // HTTPS only in production
+        sameSite: "lax", // CSRF protection
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      });
       const userDTO: UserDTO = {
         ...user.dataValues,
-        token,
       };
       return userDTO;
     },
@@ -71,7 +77,6 @@ export const userResolvers = {
       });
       const userDTO: UserDTO = {
         ...user.dataValues,
-        token,
       };
       return userDTO;
     },

@@ -2,23 +2,29 @@ import { useForm } from '@mantine/form'
 import { Stack, TextInput, PasswordInput, Checkbox, Anchor, Group } from '@mantine/core'
 import { upperFirst, useToggle } from '@mantine/hooks'
 import { MutationFunction } from '@apollo/client'
-import { LoginMutationVariables, LoginMutation } from '../../__generated__/graphql'
+import {
+  LoginMutationVariables,
+  LoginMutation,
+  SignupMutation,
+  SignupMutationVariables,
+} from '../../__generated__/graphql'
 import { Button } from '../../components/Button'
 
 interface Iprops {
   login: MutationFunction<LoginMutation, LoginMutationVariables>
+  signup: MutationFunction<SignupMutation, SignupMutationVariables>
   loading: boolean | undefined
   success: boolean | undefined
+  signupSuccess: boolean | undefined
 }
 
-export const AuthForm = ({ login, loading, success }: Iprops) => {
+export const AuthForm = ({ login, signup, loading, success, signupSuccess }: Iprops) => {
   const [type, toggle] = useToggle(['login', 'register'])
   const form = useForm({
     initialValues: {
       email: '',
       name: '',
       password: '',
-      terms: true,
     },
 
     validate: {
@@ -28,12 +34,32 @@ export const AuthForm = ({ login, loading, success }: Iprops) => {
   })
 
   const submitForm = async () => {
-    await login({ variables: { email: form.values.email, password: form.values.password } })
-    if (!success) {
-      form.setErrors({
-        password: 'Incorrect email or password',
-        email: 'Incorrect email or password',
-      })
+    if (type === 'login') {
+      await login({ variables: { email: form.values.email, password: form.values.password } })
+      if (!success) {
+        form.setErrors({
+          password: 'Incorrect email or password',
+          email: 'Incorrect email or password',
+        })
+      }
+    } else if (type === 'register') {
+      if (form.values.name.length === 0) {
+        form.setErrors({ name: 'Must enter name' })
+      } else {
+        await signup({
+          variables: {
+            name: form.values.name,
+            email: form.values.email,
+            password: form.values.password,
+          },
+        })
+        if (!signupSuccess) {
+          form.setErrors({
+            password: 'Incorrect password or email already used.',
+            email: 'Incorrect password or email already used.',
+          })
+        }
+      }
     }
   }
 
@@ -53,6 +79,7 @@ export const AuthForm = ({ login, loading, success }: Iprops) => {
             onChange={(event) => {
               form.setFieldValue('name', event.currentTarget.value)
             }}
+            error={form.errors.name}
             radius="md"
           />
         )}
@@ -80,16 +107,6 @@ export const AuthForm = ({ login, loading, success }: Iprops) => {
           error={form.errors.password}
           radius="md"
         />
-
-        {type === 'register' && (
-          <Checkbox
-            label="I accept terms and conditions"
-            checked={form.values.terms}
-            onChange={(event) => {
-              form.setFieldValue('terms', event.currentTarget.checked)
-            }}
-          />
-        )}
       </Stack>
 
       <Group justify="space-between" mt="xl">
