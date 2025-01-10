@@ -18,7 +18,9 @@ COPY --from=base_build /usr/src/app/dist /usr/share/nginx/html
 
 RUN mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
 
-COPY nginx.conf /etc/nginx/sites-available/chat.imkunal.ca
+COPY nginxChat.conf /etc/nginx/sites-available/chat.imkunal.ca
+COPY nginx.conf /etc/nginx/nginx.conf
+
 RUN ln -s /etc/nginx/sites-available/chat.imkunal.ca /etc/nginx/sites-enabled/
 
 EXPOSE 80
