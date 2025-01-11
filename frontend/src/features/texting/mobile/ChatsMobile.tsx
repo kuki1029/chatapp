@@ -1,25 +1,20 @@
-import { useQuery } from '@apollo/client'
-import { ScrollArea, LoadingOverlay, NavLink, Avatar, Text, Box } from '@mantine/core'
+import { NavLink, ScrollArea, Text, Box, Avatar, LoadingOverlay } from '@mantine/core'
+import { upperFirst } from '@mantine/hooks'
 import {
   UserChatsQuery,
   UserChatsQueryVariables,
   UserChatsDocument,
   NewUserChatDocument,
-} from '../../__generated__/graphql'
-import { useEffect, useRef, useState, useContext } from 'react'
-import { upperFirst } from '@mantine/hooks'
-import './chat.css'
-import { UserIdContext } from '../auth/UserIDContext'
+} from '../../../__generated__/graphql'
+import { useQuery } from '@apollo/client'
+import { useEffect, useRef } from 'react'
 
 interface Iprops {
-  setChatID: React.Dispatch<React.SetStateAction<string | undefined>>
+  setChat: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
-export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
-  const userID = useContext(UserIdContext)
-  const [active, setActive] = useState(-1)
+export const ChatsMobile = ({ setChat }: Iprops) => {
   const currentSub = useRef<(() => void) | null>(null)
-  const activeRef = useRef<number>(active)
   const { data, loading, subscribeToMore } = useQuery<UserChatsQuery, UserChatsQueryVariables>(
     UserChatsDocument,
     {
@@ -30,19 +25,12 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
     }
   )
 
-  useEffect(() => {
-    activeRef.current = active
-  }, [active])
-
   //TODO: CLEAN UP THIS
   useEffect(() => {
     if (data && !loading && !currentSub.current) {
       currentSub.current = subscribeToMore({
         document: NewUserChatDocument,
         updateQuery: (prev, { subscriptionData }) => {
-          const newIndex = prev.userChats.findIndex((chat) => {
-            return chat.id === subscriptionData.data.newUserChat?.id
-          })
           const newData = prev.userChats
             .map((chat) => {
               if (chat.id === subscriptionData.data.newUserChat?.id) {
@@ -65,18 +53,6 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
               }
               return 0 // When they are null
             })
-          const active = activeRef.current
-          if (!(active === -1)) {
-            // Logic to change the selected chat if the order changes.
-            if (userID && userID === subscriptionData.data.newUserChat?.userID) {
-              setActive(0)
-            } else if (newIndex === active) {
-              setActive(0)
-            } else if (newIndex > active) {
-              setActive(active + 1)
-            }
-          }
-
           return Object.assign({}, prev, {
             userChats: newData,
           })
@@ -87,9 +63,9 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
   }, [data, loading])
 
   return (
-    <ScrollArea miw={'100%'} scrollbars="y" scrollHideDelay={0}>
+    <ScrollArea h="100%" miw={'100%'} scrollbars="y" scrollHideDelay={0} p={3}>
       {data ? (
-        data.userChats.map((chat, index) => {
+        data.userChats.map((chat) => {
           return (
             <NavLink
               key={chat.id}
@@ -109,10 +85,8 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
                   {chat.lastMsg}
                 </Text>
               }
-              active={index === active}
               onClick={() => {
-                setActive(index)
-                setChatID(chat.id)
+                setChat(chat.id)
               }}
               variant="filled"
               autoContrast

@@ -35,7 +35,6 @@ export const Chats = ({ setChatID }: Iprops) => {
     >
       <Stack {...stackStyle}>
         {/* TODO: Move this to own component */}
-        {/* TODO: Add hover tooltips to action icons */}
         {/* TODO: Add active icon to action button */}
         <Group p={'md'} miw={'100%'} justify="space-between">
           <Tooltip openDelay={300} label="Messages" bg={colors.primary}>

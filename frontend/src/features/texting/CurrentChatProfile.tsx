@@ -1,7 +1,7 @@
-import { Group, Text, Avatar, ActionIcon, Indicator } from '@mantine/core'
-import { IconVideoPlus } from '@tabler/icons-react'
+import { Group, Text, Avatar, ActionIcon, Indicator, em } from '@mantine/core'
+import { IconVideoPlus, IconArrowLeft } from '@tabler/icons-react'
 import { useColorScheme } from '../../utility/useColorScheme'
-import { upperFirst } from '@mantine/hooks'
+import { upperFirst, useMediaQuery } from '@mantine/hooks'
 
 interface Iprops {
   chatUsers: {
@@ -9,15 +9,35 @@ interface Iprops {
     avatar?: string | null | undefined
   }[]
   status: string
+  setChat?: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
-export const CurrentChatProfile = ({ chatUsers, status }: Iprops) => {
+export const CurrentChatProfile = ({ chatUsers, status, setChat }: Iprops) => {
+  const isMobile = useMediaQuery(`(max-width: ${em(750)})`)
+
   const colors = useColorScheme()
   const { name, avatar } = chatUsers[0] //TODO: Do a map when adding group chats
 
   return (
     <Group w={'100%'} justify="space-between">
       <Group style={{ gap: '0.5rem' }}>
+        {isMobile && (
+          <ActionIcon
+            size={24}
+            radius="md"
+            onClick={() => {
+              console.log('ww')
+
+              if (setChat) {
+                setChat(undefined)
+              }
+            }}
+            color={colors.buttons}
+            variant="transparent"
+          >
+            <IconArrowLeft size={18} />
+          </ActionIcon>
+        )}
         <Indicator color="green" size={8}>
           <Avatar color={colors.buttons} radius="sm" variant="light">
             {avatar ? avatar : upperFirst(name[0])}
