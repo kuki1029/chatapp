@@ -21,13 +21,12 @@ export const CurrentChatProfile = ({ chatUsers, status, setChat }: Iprops) => {
   return (
     <Group w={'100%'} justify="space-between">
       <Group style={{ gap: '0.5rem' }}>
+        {/* TODO: On first load, this has a weird issue where it appers. bcoz if u log isMobile, it is undefind first so not smooth behaviour */}
         {isMobile && (
           <ActionIcon
             size={24}
             radius="md"
             onClick={() => {
-              console.log('ww')
-
               if (setChat) {
                 setChat(undefined)
               }

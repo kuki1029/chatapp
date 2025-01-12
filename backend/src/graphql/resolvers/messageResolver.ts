@@ -19,6 +19,8 @@ export const messageResolvers = {
   },
   Query: {
     userChats: async (_: unknown, __: unknown, ctx: MyContext) => {
+      console.log(ctx.userID);
+      console.log("================");
       const sequelize = db.sequelize;
       if (!ctx.userID) {
         return []; // TODO: Add auth middleware so this is never null when websockets

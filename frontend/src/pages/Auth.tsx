@@ -8,11 +8,13 @@ import {
   SignupDocument,
   SignupMutation,
   SignupMutationVariables,
+  LoggedInAndUserIdQuery,
 } from '../__generated__/graphql'
 import { useNavigate } from 'react-router-dom'
+import { ApolloQueryResult } from '@apollo/client'
 
 interface Iprops {
-  refetchLoginStatus: () => void
+  refetchLoginStatus: () => Promise<ApolloQueryResult<LoggedInAndUserIdQuery>>
 }
 
 export const Auth = ({ refetchLoginStatus }: Iprops) => {
@@ -25,8 +27,7 @@ export const Auth = ({ refetchLoginStatus }: Iprops) => {
       },
       onCompleted: (data) => {
         if (data.login) {
-          refetchLoginStatus()
-          navigate('/')
+          void refetchLoginStatus()
         } else {
           navigate('/login')
         }
@@ -42,8 +43,7 @@ export const Auth = ({ refetchLoginStatus }: Iprops) => {
     },
     onCompleted: (data) => {
       if (data.signup) {
-        refetchLoginStatus()
-        navigate('/')
+        void refetchLoginStatus()
       } else {
         navigate('/login')
       }

@@ -22,6 +22,7 @@ export const ChatsMobile = ({ setChat }: Iprops) => {
         console.log(error)
         open()
       },
+      fetchPolicy: 'cache-and-network',
     }
   )
 

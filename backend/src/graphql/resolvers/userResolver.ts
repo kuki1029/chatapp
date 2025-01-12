@@ -78,6 +78,7 @@ export const userResolvers = {
       const userDTO: UserDTO = {
         ...user.dataValues,
       };
+      console.log("RETURNED");
       return userDTO;
     },
     logout: async (_: unknown, __: unknown, ctx: MyContext) => {

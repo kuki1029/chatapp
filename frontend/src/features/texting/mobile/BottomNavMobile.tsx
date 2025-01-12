@@ -2,7 +2,10 @@ import { ActionIcon, Group, Tooltip } from '@mantine/core'
 import { IconBrandLine, IconMailPlus, IconUserSearch, IconUserCircle } from '@tabler/icons-react'
 import { useColorScheme } from '../../../utility/useColorScheme'
 
-export const BottomNavMobile = () => {
+interface Iprops {
+  setActive: React.Dispatch<React.SetStateAction<number>>
+}
+export const BottomNavMobile = ({ setActive }: Iprops) => {
   const colors = useColorScheme()
 
   return (
@@ -15,9 +18,9 @@ export const BottomNavMobile = () => {
           radius="md"
           color={colors.primary}
           variant="subtle"
-          // onClick={() => {
-          //   setCurrentView(ChatsDisplay.CHATS)
-          // }}
+          onClick={() => {
+            setActive(0)
+          }}
         >
           <IconBrandLine size={28} stroke={1.5} />
         </ActionIcon>
@@ -28,9 +31,9 @@ export const BottomNavMobile = () => {
           radius="md"
           color={colors.primary}
           variant="subtle"
-          // onClick={() => {
-          //   setCurrentView(ChatsDisplay.FRIENDS)
-          // }}
+          onClick={() => {
+            setActive(1) //TODO: Use enum
+          }}
         >
           <IconMailPlus size={18} stroke={1.5} />
         </ActionIcon>

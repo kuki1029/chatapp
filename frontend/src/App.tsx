@@ -31,7 +31,6 @@ function App() {
     notifyOnNetworkStatusChange: true, // Need this so it uses onComplete on refetch
     onCompleted: (data) => {
       setUserID(data.userID)
-      console.log(data)
       if (data.isLoggedIn && isLoginPage) {
         navigate('/')
       }

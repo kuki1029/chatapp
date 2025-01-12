@@ -3,6 +3,7 @@ import {
   CreateChatWithEmailDocument,
   CreateChatWithEmailMutation,
   CreateChatWithEmailMutationVariables,
+  UserChatsDocument,
 } from '../../__generated__/graphql'
 import { useState } from 'react'
 import { useMutation } from '@apollo/client'
@@ -18,10 +19,12 @@ export const CreateNewChat = () => {
     onError: (error) => {
       console.log(error)
     },
+    refetchQueries: [{ query: UserChatsDocument }],
   })
 
   const onSubmitButton = () => {
     void createChat({ variables: { email } })
+    setEmail('')
   }
 
   return (

@@ -1,6 +1,4 @@
-import { Stack, Paper, Text } from '@mantine/core'
-import { IconArrowLeft } from '@tabler/icons-react'
-import { useColorScheme } from '../../../utility/useColorScheme'
+import { Stack, Text } from '@mantine/core'
 import {
   ChatMessagesQuery,
   ChatMessagesQueryVariables,

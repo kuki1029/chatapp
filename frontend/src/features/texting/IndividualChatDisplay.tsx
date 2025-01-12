@@ -20,6 +20,7 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
   const [active, setActive] = useState(-1)
   const currentSub = useRef<(() => void) | null>(null)
   const activeRef = useRef<number>(active)
+  console.log('here')
   const { data, loading, subscribeToMore } = useQuery<UserChatsQuery, UserChatsQueryVariables>(
     UserChatsDocument,
     {
@@ -27,8 +28,10 @@ export const IndividualChatDisplay = ({ setChatID }: Iprops) => {
         console.log(error)
         open()
       },
+      fetchPolicy: 'cache-and-network',
     }
   )
+  console.log(data)
 
   useEffect(() => {
     activeRef.current = active

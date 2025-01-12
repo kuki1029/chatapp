@@ -1,6 +1,10 @@
 import { Button } from '../components/Button'
-import { useMutation } from '@apollo/client'
-import { LogoutMutation, LogoutMutationVariables } from '../__generated__/graphql'
+import { useApolloClient, useMutation } from '@apollo/client'
+import {
+  LogoutMutation,
+  LogoutMutationVariables,
+  LoggedInAndUserIdQuery,
+} from '../__generated__/graphql'
 import { LOGOUT } from '../features/auth/auth.gql'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
@@ -11,22 +15,19 @@ import {
   useMantineColorScheme,
   useComputedColorScheme,
   ActionIcon,
-  Title,
   em,
-  Stack,
 } from '@mantine/core'
 import { useState } from 'react'
 import { Messaging } from '../features/texting/Messaging'
 import { Chats } from '../features/texting/Chats'
 import { Orbs } from '../utility/Orbs.tsx'
 import { IconSun, IconMoon } from '@tabler/icons-react'
-import { MessagingMobile } from '../features/texting/mobile/MessagingMobile.tsx'
-import { ChatsMobile } from '../features/texting/mobile/ChatsMobile.tsx'
-import { BottomNavMobile } from '../features/texting/mobile/BottomNavMobile.tsx'
-import { useColorScheme } from '../utility/useColorScheme.tsx'
+import { ApolloQueryResult } from '@apollo/client'
+
+import { ChatScreenMobile } from '../features/texting/mobile/ChatScreenMobile.tsx'
 
 interface Iprops {
-  refetchLoginStatus: () => void
+  refetchLoginStatus: () => Promise<ApolloQueryResult<LoggedInAndUserIdQuery>>
 }
 
 const centerStyle = {
@@ -34,13 +35,12 @@ const centerStyle = {
 }
 
 export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
-  const colors = useColorScheme()
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`)
   const { setColorScheme } = useMantineColorScheme()
   const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true })
+  const client = useApolloClient()
 
   const [chatID, setChatID] = useState<string | undefined>()
-  console.log(chatID)
   const [opened, { open, close }] = useDisclosure(false)
 
   const [logout, { loading }] = useMutation<LogoutMutation, LogoutMutationVariables>(LOGOUT, {
@@ -54,7 +54,8 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
 
   const logoutLogic = async (): Promise<void> => {
     await logout()
-    refetchLoginStatus()
+    await client.resetStore()
+    await refetchLoginStatus()
     navigate('/login')
   }
 
@@ -80,19 +81,7 @@ export const ChatScreen = ({ refetchLoginStatus }: Iprops) => {
           </Grid>
         </>
       ) : (
-        <Stack justify="space-between" style={{ zIndex: 100 }}>
-          {!chatID ? (
-            <Stack h="100vh" justify="space-between" style={{ zIndex: 100 }}>
-              <Title pt={'5%'} pl={'5%'} order={2} c={colors.primary}>
-                Chats
-              </Title>
-              <ChatsMobile setChat={setChatID} />
-              <BottomNavMobile />
-            </Stack>
-          ) : (
-            <MessagingMobile chatID={chatID} setChat={setChatID} />
-          )}
-        </Stack>
+        <ChatScreenMobile chatID={chatID} setChat={setChatID} />
       )}
       <Button text="Logout" loading={loading} onClick={logoutLogic} />{' '}
       <ActionIcon
