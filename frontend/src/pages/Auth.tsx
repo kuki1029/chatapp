@@ -1,4 +1,4 @@
-import { Divider, Paper, Title, Center, Container, Modal } from '@mantine/core'
+import { Paper, Title, Center, Container, Modal } from '@mantine/core'
 import { AuthForm } from '../features/auth/AuthForm.tsx'
 import { useMutation } from '@apollo/client'
 import {
@@ -34,7 +34,7 @@ export const Auth = ({ refetchLoginStatus }: Iprops) => {
       },
     }
   )
-  const [signup, { loading: signupLoading, error: signupError, data: signupData }] = useMutation<
+  const [signup, { loading: signupLoading, data: signupData }] = useMutation<
     SignupMutation,
     SignupMutationVariables
   >(SignupDocument, {

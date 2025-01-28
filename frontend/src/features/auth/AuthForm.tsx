@@ -1,5 +1,5 @@
 import { useForm } from '@mantine/form'
-import { Stack, TextInput, PasswordInput, Checkbox, Anchor, Group } from '@mantine/core'
+import { Stack, TextInput, PasswordInput, Anchor, Group } from '@mantine/core'
 import { upperFirst, useToggle } from '@mantine/hooks'
 import { MutationFunction } from '@apollo/client'
 import {
