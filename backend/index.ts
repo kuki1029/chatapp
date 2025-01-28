@@ -38,6 +38,7 @@ const start = async () => {
       "http://localhost:5173",
       "http://localhost",
       "http://chat.imkunal.ca",
+      "https://chat.imkunal.ca",
       "https://studio.apollographql.com",
       "https://sandbox.embed.apollographql.com",
     ],

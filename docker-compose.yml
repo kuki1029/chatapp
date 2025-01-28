@@ -1,4 +1,5 @@
 services:
+# TODO: Need to edit this docker compose to only host app and not setup nginx. Do that in another repo
   frontend_webchat:
     build:
       context: ./frontend/
