@@ -19,7 +19,7 @@ if (!rootElem) {
 const httpLink = new HttpLink({
   uri:
     import.meta.env.MODE === 'production'
-      ? 'http://chat.imkunal.ca:80/api/'
+      ? 'https://chat.imkunal.ca/api/'
       : 'http://localhost:4000/graphql',
   credentials: 'include',
 })
